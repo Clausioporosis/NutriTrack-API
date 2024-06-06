@@ -17,3 +17,11 @@ spring:
     devtools:
         restart:
             enabled: true
+
+jwt:
+  secret: tKsRC4OSCF4neRuskYJYw0FALwRkdiG1u6F2oj24P60=
+  expiration: 3600000
+  auth:
+    converter:
+      principle-attribute: sub
+      resource-id: nutritrack
