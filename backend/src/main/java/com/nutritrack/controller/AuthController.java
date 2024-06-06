@@ -14,6 +14,8 @@ import com.nutritrack.dto.*;
 
 import com.nutritrack.model.User;
 
+import jakarta.validation.Valid;
+
 @RestController
 public class AuthController {
 
@@ -33,7 +35,15 @@ public class AuthController {
     private PasswordEncoder passwordEncoder;
 
     @PostMapping("/register")
-    public void registerUser(@RequestBody RegisterRequest registerRequest) {
+    public void registerUser(@Valid @RequestBody RegisterRequest registerRequest) {
+        if (userRepository.existsByUsername(registerRequest.getUsername())) {
+            throw new IllegalArgumentException("Username already exists");
+        }
+
+        if (userRepository.existsByEmail(registerRequest.getEmail())) {
+            throw new IllegalArgumentException("Email already exists");
+        }
+
         User user = new User();
         user.setUsername(registerRequest.getUsername());
         user.setEmail(registerRequest.getEmail());
