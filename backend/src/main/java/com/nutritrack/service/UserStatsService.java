@@ -11,12 +11,17 @@ import java.util.List;
 import java.util.stream.Collectors;
 import com.nutritrack.model.DailyIntake;
 import com.nutritrack.model.UserStatsId;
+import com.nutritrack.repository.SustainabilityRepository;
+import com.nutritrack.model.Sustainability;
 
 @Service
 public class UserStatsService {
 
     @Autowired
     private UserStatsRepository userStatsRepository;
+
+    @Autowired
+    private SustainabilityRepository sustainabilityRepository;
 
     @Transactional(readOnly = true)
     public List<UserStatsResponse> getUserStats() {
@@ -50,18 +55,29 @@ public class UserStatsService {
         UserStats userStats = userStatsRepository.findById(userStatsId)
                 .orElse(new UserStats(userId, date));
 
+        Sustainability sustainability = sustainabilityRepository.findByFoodId(dailyIntake.getFood().getId());
+        if (sustainability == null) {
+            throw new RuntimeException("Sustainability information not found for food");
+        }
+
+        double co2 = sustainability.getCo2Footprint();
+        double totalWeight = (dailyIntake.getPortion() != null)
+                ? dailyIntake.getPortion().getAmountPerPortion() * dailyIntake.getQuantity()
+                : dailyIntake.getQuantity();
+        double savedCo2 = (totalWeight / 1000) * co2;
+
         if (isDelete) {
-            userStats.setSavedCo2(userStats.getSavedCo2() - dailyIntake.getCalories());
+            userStats.setSavedCo2(userStats.getSavedCo2() - savedCo2);
             userStats.setVegetarianMeals(userStats.getVegetarianMeals()
-                    - (dailyIntake.getFood().getCategory().equalsIgnoreCase("vegetarian") ? 1 : 0));
+                    - ("vegetarian".equalsIgnoreCase(sustainability.getVeganOrVegetarian()) ? 1 : 0));
             userStats.setVeganMeals(userStats.getVeganMeals()
-                    - (dailyIntake.getFood().getCategory().equalsIgnoreCase("vegan") ? 1 : 0));
+                    - ("vegan".equalsIgnoreCase(sustainability.getVeganOrVegetarian()) ? 1 : 0));
         } else {
-            userStats.setSavedCo2(userStats.getSavedCo2() + dailyIntake.getCalories());
+            userStats.setSavedCo2(userStats.getSavedCo2() + savedCo2);
             userStats.setVegetarianMeals(userStats.getVegetarianMeals()
-                    + (dailyIntake.getFood().getCategory().equalsIgnoreCase("vegetarian") ? 1 : 0));
+                    + ("vegetarian".equalsIgnoreCase(sustainability.getVeganOrVegetarian()) ? 1 : 0));
             userStats.setVeganMeals(userStats.getVeganMeals()
-                    + (dailyIntake.getFood().getCategory().equalsIgnoreCase("vegan") ? 1 : 0));
+                    + ("vegan".equalsIgnoreCase(sustainability.getVeganOrVegetarian()) ? 1 : 0));
         }
 
         userStatsRepository.save(userStats);

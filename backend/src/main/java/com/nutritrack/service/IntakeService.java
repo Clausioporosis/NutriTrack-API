@@ -16,11 +16,9 @@ import com.nutritrack.dto.BasicDailyIntakeResponse;
 import com.nutritrack.dto.DetailedDailyIntakeResponse;
 import com.nutritrack.model.Sustainability;
 import com.nutritrack.repository.SustainabilityRepository;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.sql.Date;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -78,8 +76,7 @@ public class IntakeService {
         Double carbohydrates = (totalWeight / 100) * nutrition.getCarbohydrates();
         Double fat = (totalWeight / 100) * nutrition.getFat();
 
-        Date date = new Date(DATE_FORMAT.parse(request.getDate()).getTime()); // Konvertierung von String zu
-                                                                              // java.sql.Date
+        Date date = new Date(DATE_FORMAT.parse(request.getDate()).getTime());
 
         DailyIntake dailyIntake = new DailyIntake();
         dailyIntake.setUser(userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found")));
@@ -120,7 +117,7 @@ public class IntakeService {
             intake.setPortion(portion);
         } else {
             totalWeight = request.getQuantity();
-            intake.setPortion(null); // Setze Portion auf null
+            intake.setPortion(null);
         }
 
         Double calories = (totalWeight / 100) * nutrition.getCalories();
