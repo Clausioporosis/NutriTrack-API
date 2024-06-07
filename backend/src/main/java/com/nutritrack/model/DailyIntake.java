@@ -7,6 +7,7 @@ import lombok.Builder;
 
 import jakarta.persistence.*;
 import java.sql.Date;
+import java.sql.Timestamp;
 
 @Data
 @Entity
@@ -25,11 +26,11 @@ public class DailyIntake {
     private Food food;
 
     @ManyToOne
-    @JoinColumn(name = "portionId", nullable = true)
+    @JoinColumn(name = "portionId")
     private Portion portion;
 
     @Column(nullable = false)
-    private Date date;
+    private Timestamp date;
 
     @Column(nullable = false)
     private Double calories;

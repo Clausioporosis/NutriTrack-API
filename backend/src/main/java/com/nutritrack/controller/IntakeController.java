@@ -28,13 +28,9 @@ public class IntakeController {
     @PostMapping
     @Operation(summary = "Track a food intake")
     public ResponseEntity<DailyIntakeResponse> trackFoodIntake(@RequestBody DailyIntakeRequest request) {
-        try {
-            DailyIntake dailyIntake = intakeService.trackFoodIntake(request);
-            DailyIntakeResponse response = IntakeMapper.toDailyIntakeResponse(dailyIntake);
-            return ResponseEntity.ok(response);
-        } catch (ParseException e) {
-            return ResponseEntity.badRequest().build();
-        }
+        DailyIntake dailyIntake = intakeService.trackFoodIntake(request);
+        DailyIntakeResponse response = IntakeMapper.toDailyIntakeResponse(dailyIntake);
+        return ResponseEntity.ok(response);
     }
 
     @PutMapping("/{intakeId}")

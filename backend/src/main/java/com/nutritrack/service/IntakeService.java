@@ -24,6 +24,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.sql.Timestamp;
 
 @Service
 public class IntakeService {
@@ -52,7 +53,7 @@ public class IntakeService {
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
 
     @Transactional
-    public DailyIntake trackFoodIntake(DailyIntakeRequest request) throws ParseException {
+    public DailyIntake trackFoodIntake(DailyIntakeRequest request) {
         Long userId = SecurityUtil.getUserIdFromToken();
         Food food = foodRepository.findById(request.getFoodId())
                 .orElseThrow(() -> new RuntimeException("Food not found"));
@@ -76,13 +77,14 @@ public class IntakeService {
         Double carbohydrates = (totalWeight / 100) * nutrition.getCarbohydrates();
         Double fat = (totalWeight / 100) * nutrition.getFat();
 
-        Date date = new Date(DATE_FORMAT.parse(request.getDate()).getTime());
+        // Speichere den vollständigen Zeitstempel
+        Timestamp currentDate = new Timestamp(System.currentTimeMillis());
 
         DailyIntake dailyIntake = new DailyIntake();
         dailyIntake.setUser(userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found")));
         dailyIntake.setFood(food);
         dailyIntake.setPortion(portionRepository.findById(request.getPortionId()).orElse(null));
-        dailyIntake.setDate(date);
+        dailyIntake.setDate(currentDate);
         dailyIntake.setCalories(calories);
         dailyIntake.setProtein(protein);
         dailyIntake.setCarbohydrates(carbohydrates);
@@ -91,7 +93,7 @@ public class IntakeService {
 
         dailyIntake = dailyIntakeRepository.save(dailyIntake);
 
-        userStatsService.updateUserStats(userId, date, dailyIntake, false);
+        userStatsService.updateUserStats(userId, new java.sql.Date(currentDate.getTime()), dailyIntake, false);
 
         return dailyIntake;
     }
@@ -117,7 +119,7 @@ public class IntakeService {
             intake.setPortion(portion);
         } else {
             totalWeight = request.getQuantity();
-            intake.setPortion(null);
+            intake.setPortion(null); // Setze Portion auf null
         }
 
         Double calories = (totalWeight / 100) * nutrition.getCalories();
@@ -134,7 +136,8 @@ public class IntakeService {
 
         intake = dailyIntakeRepository.save(intake);
 
-        userStatsService.updateUserStats(intake.getUser().getId(), intake.getDate(), intake, false);
+        userStatsService.updateUserStats(intake.getUser().getId(), new java.sql.Date(intake.getDate().getTime()),
+                intake, false);
 
         return intake;
     }
@@ -146,7 +149,8 @@ public class IntakeService {
 
         dailyIntakeRepository.delete(intake);
 
-        userStatsService.updateUserStats(intake.getUser().getId(), intake.getDate(), intake, true);
+        userStatsService.updateUserStats(intake.getUser().getId(), new java.sql.Date(intake.getDate().getTime()),
+                intake, true);
     }
 
     @Transactional(readOnly = true)
@@ -214,14 +218,6 @@ public class IntakeService {
         response.setQuantity(dailyIntake.getQuantity());
 
         return response;
-    }
-
-    private void updateUserStats(Long userId, Date date, DailyIntake dailyIntake) {
-        updateUserStats(userId, new java.sql.Date(date.getTime()), dailyIntake, false);
-    }
-
-    private void updateUserStats(Long userId, java.sql.Date date, DailyIntake dailyIntake, boolean isDelete) {
-        userStatsService.updateUserStats(userId, date, dailyIntake, isDelete);
     }
 
     @Transactional(readOnly = true)
