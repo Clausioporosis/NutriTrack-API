@@ -4,31 +4,33 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import java.util.Date;
 
 import jakarta.persistence.*;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 @Entity
-@Table(name = "user_stats")
+@Table(name = "User_Stats")
+@IdClass(UserStatsId.class)
 public class UserStats {
+    @Id
+    @Column(nullable = false)
+    private Long userId;
 
-    @EmbeddedId
-    private UserStatsId id;
+    @Id
+    @Column(nullable = false)
+    private Date date;
 
-    @Column(name = "saved_co2", nullable = false)
+    @Column(nullable = false)
     private Double savedCo2;
 
-    @Column(name = "vegetarian_meals", nullable = false)
+    @Column(nullable = false)
     private Integer vegetarianMeals;
 
-    @Column(name = "vegan_meals", nullable = false)
+    @Column(nullable = false)
     private Integer veganMeals;
 
-    @MapsId("userId")
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "userId", insertable = false, updatable = false)
     private User user;
 }

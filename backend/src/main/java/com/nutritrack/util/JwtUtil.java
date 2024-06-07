@@ -28,18 +28,28 @@ public class JwtUtil {
         return extractClaim(token, Claims::getSubject);
     }
 
+    public Long extractUserId(String token) {
+        return Long.valueOf(extractClaim(token, Claims::getSubject));
+    }
+
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
         final Claims claims = extractAllClaims(token);
         return claimsResolver.apply(claims);
     }
 
     private Claims extractAllClaims(String token) {
-        return Jwts.parserBuilder().setSigningKey(secretKey()).build().parseClaimsJws(token).getBody();
+        return Jwts.parserBuilder()
+                .setSigningKey(secretKey())
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
     }
 
-    public String generateToken(UserDetails userDetails) {
+    public String generateToken(UserDetails userDetails, Long userId) {
         Map<String, Object> claims = new HashMap<>();
-        return createToken(claims, userDetails.getUsername());
+        claims.put("username", userDetails.getUsername()); // Optional: falls du den Benutzernamen zusätzlich speichern
+                                                           // möchtest
+        return createToken(claims, String.valueOf(userId));
     }
 
     private String createToken(Map<String, Object> claims, String subject) {
@@ -53,7 +63,7 @@ public class JwtUtil {
     }
 
     public Boolean validateToken(String token, UserDetails userDetails) {
-        final String username = extractUsername(token);
+        final String username = extractClaim(token, claims -> claims.get("username", String.class));
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
 

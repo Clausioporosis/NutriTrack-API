@@ -9,45 +9,40 @@ import jakarta.persistence.*;
 import java.sql.Date;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 @Entity
-@Table(name = "daily_intake")
+@Table(name = "Daily_Intake")
 public class DailyIntake {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "intake_id")
     private Long intakeId;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "userId", nullable = false)
     private User user;
 
     @ManyToOne
-    @JoinColumn(name = "food_id")
+    @JoinColumn(name = "foodId", nullable = false)
     private Food food;
 
     @ManyToOne
-    @JoinColumn(name = "portion_id")
+    @JoinColumn(name = "portionId", nullable = false)
     private Portion portion;
 
-    @Column(name = "date", nullable = false)
+    @Column(nullable = false)
     private Date date;
 
-    @Column(name = "calories", nullable = false)
+    @Column(nullable = false)
     private Double calories;
 
-    @Column(name = "protein", nullable = false)
+    @Column(nullable = false)
     private Double protein;
 
-    @Column(name = "carbohydrates", nullable = false)
+    @Column(nullable = false)
     private Double carbohydrates;
 
-    @Column(name = "fat", nullable = false)
+    @Column(nullable = false)
     private Double fat;
 
-    @Column(name = "quantity", nullable = false)
+    @Column(nullable = false)
     private Integer quantity;
 }

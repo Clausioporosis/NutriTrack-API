@@ -8,36 +8,28 @@ import lombok.Builder;
 import jakarta.persistence.*;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 @Entity
-@Table(name = "users")
+@Table(name = "App_User")
 public class User {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_id")
-    private Long userId;
+    private Long id;
 
-    @Column(name = "username", nullable = false, length = 50)
+    @Column(nullable = false, unique = true, length = 50)
     private String username;
 
-    @Column(name = "email", nullable = false, length = 50)
+    @Column(nullable = false, unique = true, length = 100)
     private String email;
 
-    @Column(name = "first_name", nullable = false, length = 50)
-    private String firstName;
-
-    @Column(name = "last_name", nullable = false, length = 50)
-    private String lastName;
-
-    @Column(name = "password", nullable = false, length = 100)
+    @Column(nullable = false, length = 255)
     private String password;
 
-    @Column(name = "height")
-    private Long height;
+    @Column(nullable = false, length = 50)
+    private String firstName;
 
-    @Column(name = "weight")
+    @Column(nullable = false, length = 50)
+    private String lastName;
+
+    private Double height;
     private Double weight;
 }

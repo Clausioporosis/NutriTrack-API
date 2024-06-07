@@ -5,9 +5,9 @@ import java.io.Serializable;
 import java.sql.Date;
 import jakarta.persistence.*;
 
-@Data
-@Embeddable
 public class UserStatsId implements Serializable {
     private Long userId;
     private Date date;
+
+    // Default constructor, equals, and hashCode methods
 }

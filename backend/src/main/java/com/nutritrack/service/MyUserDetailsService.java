@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import com.nutritrack.model.User;
 import com.nutritrack.repository.UserRepository;
 
-import java.util.Collections;
+import java.util.ArrayList;
 
 @Service
 public class MyUserDetailsService implements UserDetailsService {
@@ -23,10 +23,13 @@ public class MyUserDetailsService implements UserDetailsService {
         if (user == null) {
             throw new UsernameNotFoundException("User not found");
         }
+        return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(),
+                new ArrayList<>());
+    }
 
-        return new org.springframework.security.core.userdetails.User(
-                user.getUsername(),
-                user.getPassword(),
-                Collections.emptyList());
+    public UserDetails loadUserById(Long id) throws UsernameNotFoundException {
+        User user = userRepository.findById(id).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(),
+                new ArrayList<>());
     }
 }

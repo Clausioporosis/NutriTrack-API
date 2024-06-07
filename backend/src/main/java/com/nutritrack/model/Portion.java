@@ -8,25 +8,19 @@ import lombok.Builder;
 import jakarta.persistence.*;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 @Entity
-@Table(name = "portion")
+@Table(name = "Portion")
 public class Portion {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "portion_id")
     private Long portionId;
 
     @ManyToOne
-    @JoinColumn(name = "food_id")
+    @JoinColumn(name = "foodId", nullable = false)
     private Food food;
 
-    @Column(name = "portion_label", length = 50)
+    @Column(length = 50)
     private String portionLabel;
 
-    @Column(name = "amount_per_portion")
     private Double amountPerPortion;
 }

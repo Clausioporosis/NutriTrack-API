@@ -8,25 +8,19 @@ import lombok.Builder;
 import jakarta.persistence.*;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 @Entity
-@Table(name = "sustainability")
+@Table(name = "Sustainability")
 public class Sustainability {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "sustainability_id")
     private Long sustainabilityId;
 
     @ManyToOne
-    @JoinColumn(name = "food_id")
+    @JoinColumn(name = "foodId", nullable = false)
     private Food food;
 
-    @Column(name = "co2_footprint")
     private Double co2Footprint;
 
-    @Column(name = "vegan_or_vegetarian", length = 50)
+    @Column(length = 50)
     private String veganOrVegetarian;
 }

@@ -8,28 +8,23 @@ import lombok.Builder;
 import jakarta.persistence.*;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 @Entity
-@Table(name = "food")
+@Table(name = "Food")
 public class Food {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "food_id")
-    private Long foodId;
+    private Long id;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
 
-    @Column(name = "title", nullable = false, length = 100)
+    @Column(nullable = false, length = 100)
     private String title;
 
-    @Column(name = "brand", length = 100)
+    @Column(length = 100)
     private String brand;
 
-    @Column(name = "category", length = 50)
+    @Column(length = 50)
     private String category;
 }
