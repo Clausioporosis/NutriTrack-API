@@ -6,7 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 
 import jakarta.persistence.*;
-import java.sql.Date;
+import java.util.Date;
 import java.sql.Timestamp;
 
 @Data

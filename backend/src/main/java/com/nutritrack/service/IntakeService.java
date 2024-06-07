@@ -11,7 +11,6 @@ import com.nutritrack.repository.FoodRepository;
 import com.nutritrack.repository.NutritionRepository;
 import com.nutritrack.repository.PortionRepository;
 import com.nutritrack.repository.UserRepository;
-import com.nutritrack.repository.UserStatsRepository;
 import com.nutritrack.util.SecurityUtil;
 import com.nutritrack.dto.BasicDailyIntakeResponse;
 import com.nutritrack.dto.DetailedDailyIntakeResponse;
@@ -20,9 +19,9 @@ import com.nutritrack.repository.SustainabilityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import java.sql.Date;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -79,7 +78,7 @@ public class IntakeService {
         Double fat = (totalWeight / 100) * nutrition.getFat();
 
         // Speichere den vollständigen Zeitstempel
-        Date currentDate = new Date(System.currentTimeMillis());
+        Date currentDate = new Date();
 
         DailyIntake dailyIntake = new DailyIntake();
         dailyIntake.setUser(userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found")));
@@ -94,7 +93,7 @@ public class IntakeService {
 
         dailyIntake = dailyIntakeRepository.save(dailyIntake);
 
-        userStatsService.updateUserStats(userId, currentDate, dailyIntake, false);
+        userStatsService.updateUserStats(userId, new java.sql.Date(currentDate.getTime()), dailyIntake, false);
 
         return dailyIntake;
     }
@@ -159,14 +158,20 @@ public class IntakeService {
         Long userId = SecurityUtil.getUserIdFromToken();
         Date date;
         try {
-            date = new java.sql.Date(DATE_FORMAT.parse(dateString).getTime());
+            date = DATE_FORMAT.parse(dateString);
         } catch (ParseException e) {
             throw new RuntimeException("Invalid date format. Expected yyyy-MM-dd.", e);
         }
 
         // Berechne den Start- und Endzeitpunkt des Tages
-        Date startDate = Date.valueOf(dateString);
-        Date endDate = new Date(startDate.getTime() + (24 * 60 * 60 * 1000) - 1);
+        Date startDate;
+        Date endDate;
+        try {
+            startDate = DATE_FORMAT.parse(dateString);
+            endDate = new Date(startDate.getTime() + (24 * 60 * 60 * 1000) - 1);
+        } catch (ParseException e) {
+            throw new RuntimeException("Invalid date format. Expected yyyy-MM-dd.", e);
+        }
 
         List<DailyIntake> intakes = dailyIntakeRepository.findByUserIdAndDateBetween(userId, startDate, endDate);
         return intakes.stream()

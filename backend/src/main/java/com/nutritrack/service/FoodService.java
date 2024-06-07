@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.nutritrack.model.DailyIntake;
 import com.nutritrack.model.Food;
 import com.nutritrack.model.Nutrition;
 import com.nutritrack.model.Sustainability;
@@ -19,6 +20,7 @@ import com.nutritrack.model.User;
 import com.nutritrack.repository.UserRepository;
 import com.nutritrack.util.FoodMapper;
 import com.nutritrack.util.SecurityUtil;
+import com.nutritrack.repository.DailyIntakeRepository;
 
 import java.util.List;
 
@@ -39,6 +41,9 @@ public class FoodService {
 
     @Autowired
     private PortionRepository portionRepository;
+
+    @Autowired
+    private DailyIntakeRepository dailyIntakeRepository;
 
     @Transactional
     public Food createFood(FullFoodRequest dto) {
