@@ -1,6 +1,7 @@
 package com.nutritrack.service;
 
 import com.nutritrack.dto.DailyIntakeRequest;
+import com.nutritrack.dto.DailyIntakeResponse;
 import com.nutritrack.model.DailyIntake;
 import com.nutritrack.model.Food;
 import com.nutritrack.model.Nutrition;
@@ -24,7 +25,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.sql.Timestamp;
 
 @Service
 public class IntakeService {
@@ -64,8 +64,9 @@ public class IntakeService {
         }
 
         Double totalWeight;
+        Portion portion = null;
         if (request.getPortionId() != null) {
-            Portion portion = portionRepository.findById(request.getPortionId())
+            portion = portionRepository.findById(request.getPortionId())
                     .orElseThrow(() -> new RuntimeException("Portion not found"));
             totalWeight = portion.getAmountPerPortion() * request.getQuantity();
         } else {
@@ -78,22 +79,22 @@ public class IntakeService {
         Double fat = (totalWeight / 100) * nutrition.getFat();
 
         // Speichere den vollständigen Zeitstempel
-        Timestamp currentDate = new Timestamp(System.currentTimeMillis());
+        Date currentDate = new Date(System.currentTimeMillis());
 
         DailyIntake dailyIntake = new DailyIntake();
         dailyIntake.setUser(userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found")));
         dailyIntake.setFood(food);
-        dailyIntake.setPortion(portionRepository.findById(request.getPortionId()).orElse(null));
+        dailyIntake.setPortion(portion);
         dailyIntake.setDate(currentDate);
         dailyIntake.setCalories(calories);
         dailyIntake.setProtein(protein);
         dailyIntake.setCarbohydrates(carbohydrates);
         dailyIntake.setFat(fat);
-        dailyIntake.setQuantity(request.getQuantity());
+        dailyIntake.setQuantity(totalWeight);
 
         dailyIntake = dailyIntakeRepository.save(dailyIntake);
 
-        userStatsService.updateUserStats(userId, new java.sql.Date(currentDate.getTime()), dailyIntake, false);
+        userStatsService.updateUserStats(userId, currentDate, dailyIntake, false);
 
         return dailyIntake;
     }
@@ -162,18 +163,37 @@ public class IntakeService {
         } catch (ParseException e) {
             throw new RuntimeException("Invalid date format. Expected yyyy-MM-dd.", e);
         }
-        List<DailyIntake> intakes = dailyIntakeRepository.findByUserIdAndDate(userId, date);
+
+        // Berechne den Start- und Endzeitpunkt des Tages
+        Date startDate = Date.valueOf(dateString);
+        Date endDate = new Date(startDate.getTime() + (24 * 60 * 60 * 1000) - 1);
+
+        List<DailyIntake> intakes = dailyIntakeRepository.findByUserIdAndDateBetween(userId, startDate, endDate);
         return intakes.stream()
                 .map(this::toBasicDailyIntakeResponse)
                 .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
-    public DetailedDailyIntakeResponse getIntakeById(Long intakeId) {
+    public DailyIntakeResponse getIntakeById(Long intakeId) {
         DailyIntake intake = dailyIntakeRepository.findById(intakeId)
                 .orElseThrow(() -> new RuntimeException("Intake not found"));
 
-        return toDetailedDailyIntakeResponse(intake);
+        return toDailyIntakeResponse(intake);
+    }
+
+    private DailyIntakeResponse toDailyIntakeResponse(DailyIntake dailyIntake) {
+        DailyIntakeResponse response = new DailyIntakeResponse();
+        response.setIntakeId(dailyIntake.getIntakeId());
+        response.setFoodId(dailyIntake.getFood().getId());
+        response.setPortionId(dailyIntake.getPortion() != null ? dailyIntake.getPortion().getPortionId() : null);
+        response.setDate(dailyIntake.getDate());
+        response.setCalories(dailyIntake.getCalories());
+        response.setProtein(dailyIntake.getProtein());
+        response.setCarbohydrates(dailyIntake.getCarbohydrates());
+        response.setFat(dailyIntake.getFat());
+        response.setQuantity(dailyIntake.getQuantity());
+        return response;
     }
 
     private BasicDailyIntakeResponse toBasicDailyIntakeResponse(DailyIntake dailyIntake) {
@@ -184,39 +204,6 @@ public class IntakeService {
         response.setBrand(dailyIntake.getFood().getBrand());
         response.setCategory(dailyIntake.getFood().getCategory());
         response.setDate(dailyIntake.getDate());
-        return response;
-    }
-
-    private DetailedDailyIntakeResponse toDetailedDailyIntakeResponse(DailyIntake dailyIntake) {
-        DetailedDailyIntakeResponse response = new DetailedDailyIntakeResponse();
-        response.setIntakeId(dailyIntake.getIntakeId());
-        response.setFoodId(dailyIntake.getFood().getId());
-        response.setTitle(dailyIntake.getFood().getTitle());
-        response.setBrand(dailyIntake.getFood().getBrand());
-        response.setCategory(dailyIntake.getFood().getCategory());
-
-        Nutrition nutrition = nutritionRepository.findByFoodId(dailyIntake.getFood().getId());
-        if (nutrition != null) {
-            response.setIsLiquid(nutrition.getIsLiquid());
-            response.setCalories(nutrition.getCalories());
-            response.setProtein(nutrition.getProtein());
-            response.setCarbohydrates(nutrition.getCarbohydrates());
-            response.setFat(nutrition.getFat());
-        }
-
-        Sustainability sustainability = sustainabilityRepository.findByFoodId(dailyIntake.getFood().getId());
-        if (sustainability != null) {
-            response.setCo2Footprint(sustainability.getCo2Footprint());
-            response.setVeganOrVegetarian(sustainability.getVeganOrVegetarian());
-        }
-
-        if (dailyIntake.getPortion() != null) {
-            response.setPortionId(dailyIntake.getPortion().getPortionId());
-            response.setPortionLabel(dailyIntake.getPortion().getPortionLabel());
-            response.setAmountPerPortion(dailyIntake.getPortion().getAmountPerPortion());
-        }
-        response.setQuantity(dailyIntake.getQuantity());
-
         return response;
     }
 

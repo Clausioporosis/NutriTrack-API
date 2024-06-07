@@ -58,8 +58,8 @@ public class IntakeController {
 
     @GetMapping("/{intakeId}")
     @Operation(summary = "Get detailed intake by ID")
-    public ResponseEntity<DetailedDailyIntakeResponse> getIntakeById(@PathVariable Long intakeId) {
-        DetailedDailyIntakeResponse intake = intakeService.getIntakeById(intakeId);
+    public ResponseEntity<DailyIntakeResponse> getIntakeById(@PathVariable Long intakeId) {
+        DailyIntakeResponse intake = intakeService.getIntakeById(intakeId);
         return ResponseEntity.ok(intake);
     }
 

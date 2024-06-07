@@ -26,11 +26,11 @@ public class DailyIntake {
     private Food food;
 
     @ManyToOne
-    @JoinColumn(name = "portionId")
+    @JoinColumn(name = "portionId", nullable = true)
     private Portion portion;
 
     @Column(nullable = false)
-    private Timestamp date;
+    private Date date;
 
     @Column(nullable = false)
     private Double calories;

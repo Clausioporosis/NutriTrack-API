@@ -6,6 +6,7 @@ import org.springframework.stereotype.Repository;
 import java.sql.Date;
 import java.util.List;
 import java.util.Optional;
+import java.sql.Timestamp;
 
 @Repository
 public interface DailyIntakeRepository extends JpaRepository<DailyIntake, Long> {
@@ -16,4 +17,5 @@ public interface DailyIntakeRepository extends JpaRepository<DailyIntake, Long> 
     Optional<DailyIntake> findById(Long intakeId);
 
     List<DailyIntake> findByUserIdAndDateBetween(Long userId, Date startDate, Date endDate);
+
 }
