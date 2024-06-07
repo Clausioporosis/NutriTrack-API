@@ -1,29 +1,43 @@
 package com.nutritrack.model;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-
 import jakarta.persistence.*;
+import lombok.Data;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 @Data
 @Entity
-@Table(name = "Nutrition")
+@Table(name = "nutritions", indexes = {
+        @Index(name = "idx_food_id", columnList = "food_id")
+})
+@Schema(description = "Nutrition entity representing nutritional information of a food item")
 public class Nutrition {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long nutritionId;
-
-    @ManyToOne
-    @JoinColumn(name = "foodId", nullable = false)
-    private Food food;
+    @Schema(description = "Unique identifier of the nutrition information")
+    private Long id;
 
     @Column(nullable = false)
-    private Boolean isLiquid;
+    @Schema(description = "Flag indicating if the food is a liquid")
+    private boolean isLiquid;
 
-    private Double calories;
-    private Double protein;
-    private Double carbohydrates;
-    private Double fat;
+    @Column(nullable = false)
+    @Schema(description = "Calories per 100g or 100ml of the food")
+    private float calories;
+
+    @Column(nullable = false)
+    @Schema(description = "Protein content per 100g or 100ml of the food in grams")
+    private float protein;
+
+    @Column(nullable = false)
+    @Schema(description = "Carbohydrate content per 100g or 100ml of the food in grams")
+    private float carbs;
+
+    @Column(nullable = false)
+    @Schema(description = "Fat content per 100g or 100ml of the food in grams")
+    private float fat;
+
+    @OneToOne
+    @JoinColumn(name = "food_id", nullable = false)
+    @Schema(description = "Food item associated with the nutrition information")
+    private Food food;
 }

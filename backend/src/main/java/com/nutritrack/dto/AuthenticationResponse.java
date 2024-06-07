@@ -1,12 +1,10 @@
 package com.nutritrack.dto;
 
 import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.ToString;
+import lombok.Data;
 
+@Data
 @AllArgsConstructor
-@Getter
-@ToString
 public class AuthenticationResponse {
-    private final String jwt;
+    private String jwt;
 }

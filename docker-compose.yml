@@ -6,7 +6,9 @@ services:
       - "8080:8080"
     volumes:
       - ./backend:/api-app
-      
+    depends_on:
+      - db
+
   db:
     image: postgres:16
     container_name: postgres
@@ -14,12 +16,11 @@ services:
     environment:
       POSTGRES_USER: root
       POSTGRES_PASSWORD: root
-      POSTGRES_DB: nutritack
+      POSTGRES_DB: nutritrack  
     ports:
       - "5432:5432"
     volumes:
       - db:/var/lib/postgresql/data
-      - ./db:/docker-entrypoint-initdb.d
 
   pgadmin:
     image: dpage/pgadmin4
@@ -30,6 +31,8 @@ services:
       PGADMIN_DEFAULT_PASSWORD: root
     ports:
       - "5050:80"
+    depends_on:
+      - db
     volumes:
       - pgAdmin:/var/lib/pgadmin
       - ./pgAdmin:/var/lib/pgadmin/storage

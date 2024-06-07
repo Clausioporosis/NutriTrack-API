@@ -15,8 +15,16 @@ import com.nutritrack.dto.*;
 import com.nutritrack.model.User;
 
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 @RestController
+@RequestMapping("/api/auth")
+@Tag(name = "Authentication", description = "APIs for user authentication and registration")
 public class AuthController {
 
     @Autowired
@@ -34,14 +42,18 @@ public class AuthController {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Operation(summary = "Register a new user", responses = {
+            @ApiResponse(responseCode = "201", description = "User registered successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid input data or username/email already exists")
+    })
     @PostMapping("/register")
-    public void registerUser(@Valid @RequestBody RegisterRequest registerRequest) {
+    public ResponseEntity<String> registerUser(@Valid @RequestBody RegisterRequest registerRequest) {
         if (userRepository.existsByUsername(registerRequest.getUsername())) {
-            throw new IllegalArgumentException("Username already exists");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Username already exists");
         }
 
         if (userRepository.existsByEmail(registerRequest.getEmail())) {
-            throw new IllegalArgumentException("Email already exists");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email already exists");
         }
 
         User user = new User();
@@ -51,23 +63,31 @@ public class AuthController {
         user.setFirstName(registerRequest.getFirstName());
         user.setLastName(registerRequest.getLastName());
         userRepository.save(user);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body("User registered successfully");
     }
 
+    @Operation(summary = "Authenticate user and get JWT token", responses = {
+            @ApiResponse(responseCode = "200", description = "Successful authentication"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized, incorrect username or password"),
+            @ApiResponse(responseCode = "400", description = "Invalid input data")
+    })
     @PostMapping("/authenticate")
-    public AuthenticationResponse createAuthenticationToken(@RequestBody AuthenticationRequest authenticationRequest)
-            throws Exception {
+    public ResponseEntity<AuthenticationResponse> createAuthenticationToken(
+            @Valid @RequestBody AuthenticationRequest authenticationRequest) {
         try {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(authenticationRequest.getUsername(),
                             authenticationRequest.getPassword()));
         } catch (Exception e) {
-            throw new Exception("Incorrect username or password", e);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(new AuthenticationResponse("Incorrect username or password"));
         }
 
         final UserDetails userDetails = userDetailsService.loadUserByUsername(authenticationRequest.getUsername());
         final User user = userRepository.findByUsername(authenticationRequest.getUsername());
         final String jwt = jwtUtil.generateToken(userDetails, user.getId());
 
-        return new AuthenticationResponse(jwt);
+        return ResponseEntity.ok(new AuthenticationResponse(jwt));
     }
 }

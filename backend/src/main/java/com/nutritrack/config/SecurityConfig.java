@@ -2,6 +2,7 @@ package com.nutritrack.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -49,7 +50,8 @@ public class SecurityConfig {
                                                 .requestMatchers("/swagger-ui/**", "/swagger-ui.html",
                                                                 "/swagger-resources/**", "/v3/api-docs/**",
                                                                 "/v2/api-docs", "/webjars/**", "/configuration/ui",
-                                                                "/configuration/security", "/authenticate", "/register")
+                                                                "/configuration/security", "/api/auth/register",
+                                                                "/api/auth/authenticate")
                                                 .permitAll()
                                                 .anyRequest().authenticated())
                                 .oauth2ResourceServer(oauth2 -> oauth2
