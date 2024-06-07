@@ -1,6 +1,8 @@
 package com.nutritrack.dto;
 
 import lombok.Data;
+import java.util.List;
+import com.nutritrack.dto.PortionRequest;
 
 @Data
 public class FullFoodRequest {
@@ -14,6 +16,5 @@ public class FullFoodRequest {
     private Double fat;
     private Double co2Footprint;
     private String veganOrVegetarian;
-    private String portionLabel;
-    private Double amountPerPortion;
+    private List<PortionRequest> portions;
 }

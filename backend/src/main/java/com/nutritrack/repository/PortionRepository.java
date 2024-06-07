@@ -7,7 +7,7 @@ import com.nutritrack.model.Portion;
 
 @Repository
 public interface PortionRepository extends JpaRepository<Portion, Long> {
-    Portion findByFoodId(Long foodId);
+    List<Portion> findByFoodId(Long foodId);
 
     void deleteByFoodId(Long foodId);
 }

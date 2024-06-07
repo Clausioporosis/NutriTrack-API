@@ -88,8 +88,8 @@ public class FoodController {
         Food updatedFood = foodService.updateFood(foodId, userId, dto);
         Nutrition nutrition = nutritionRepository.findByFoodId(updatedFood.getId());
         Sustainability sustainability = sustainabilityRepository.findByFoodId(updatedFood.getId());
-        Portion portion = portionRepository.findByFoodId(updatedFood.getId());
-        FullFoodResponse response = FoodMapper.toFullFoodResponse(updatedFood, nutrition, sustainability, portion);
+        List<Portion> portions = portionRepository.findByFoodId(updatedFood.getId());
+        FullFoodResponse response = FoodMapper.toFullFoodResponse(updatedFood, nutrition, sustainability, portions);
         return ResponseEntity.ok(response);
     }
 

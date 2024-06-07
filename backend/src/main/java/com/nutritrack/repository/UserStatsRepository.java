@@ -8,11 +8,14 @@ import com.nutritrack.model.UserStatsId;
 import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Date;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 @Repository
 public interface UserStatsRepository extends JpaRepository<UserStats, UserStatsId> {
     List<UserStats> findByUserId(Long userId);
+
+    Optional<UserStats> findById(UserStatsId id);
 
     List<UserStats> findByUserIdAndDateBetween(Long userId, Date startDate, Date endDate);
 }

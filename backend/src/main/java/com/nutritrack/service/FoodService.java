@@ -14,10 +14,13 @@ import com.nutritrack.repository.SustainabilityRepository;
 import com.nutritrack.repository.PortionRepository;
 import com.nutritrack.dto.FullFoodRequest;
 import com.nutritrack.dto.FullFoodResponse;
+import com.nutritrack.dto.PortionRequest;
 import com.nutritrack.model.User;
 import com.nutritrack.repository.UserRepository;
 import com.nutritrack.util.FoodMapper;
 import com.nutritrack.util.SecurityUtil;
+
+import java.util.List;
 
 @Service
 public class FoodService {
@@ -65,11 +68,15 @@ public class FoodService {
         sustainability.setVeganOrVegetarian(dto.getVeganOrVegetarian());
         sustainabilityRepository.save(sustainability);
 
-        Portion portion = new Portion();
-        portion.setFood(food);
-        portion.setPortionLabel(dto.getPortionLabel());
-        portion.setAmountPerPortion(dto.getAmountPerPortion());
-        portionRepository.save(portion);
+        if (dto.getPortions() != null) {
+            for (PortionRequest portionRequest : dto.getPortions()) {
+                Portion portion = new Portion();
+                portion.setFood(food);
+                portion.setPortionLabel(portionRequest.getPortionLabel());
+                portion.setAmountPerPortion(portionRequest.getAmountPerPortion());
+                portionRepository.save(portion);
+            }
+        }
 
         return food;
     }
@@ -97,10 +104,18 @@ public class FoodService {
         sustainability.setVeganOrVegetarian(dto.getVeganOrVegetarian());
         sustainabilityRepository.save(sustainability);
 
-        Portion portion = portionRepository.findByFoodId(foodId);
-        portion.setPortionLabel(dto.getPortionLabel());
-        portion.setAmountPerPortion(dto.getAmountPerPortion());
-        portionRepository.save(portion);
+        List<Portion> existingPortions = portionRepository.findByFoodId(foodId);
+        portionRepository.deleteAll(existingPortions);
+
+        if (dto.getPortions() != null) {
+            for (PortionRequest portionRequest : dto.getPortions()) {
+                Portion portion = new Portion();
+                portion.setFood(food);
+                portion.setPortionLabel(portionRequest.getPortionLabel());
+                portion.setAmountPerPortion(portionRequest.getAmountPerPortion());
+                portionRepository.save(portion);
+            }
+        }
 
         return food;
     }
@@ -112,9 +127,9 @@ public class FoodService {
 
         Nutrition nutrition = nutritionRepository.findByFoodId(food.getId());
         Sustainability sustainability = sustainabilityRepository.findByFoodId(food.getId());
-        Portion portion = portionRepository.findByFoodId(food.getId());
+        List<Portion> portions = portionRepository.findByFoodId(food.getId());
 
-        return FoodMapper.toFullFoodResponse(food, nutrition, sustainability, portion);
+        return FoodMapper.toFullFoodResponse(food, nutrition, sustainability, portions);
     }
 
     @Transactional

@@ -1,11 +1,14 @@
 package com.nutritrack.util;
 
 import com.nutritrack.model.Food;
-import com.nutritrack.dto.FoodResponse;
-import com.nutritrack.dto.FullFoodResponse;
 import com.nutritrack.model.Nutrition;
 import com.nutritrack.model.Portion;
 import com.nutritrack.model.Sustainability;
+import com.nutritrack.dto.FoodResponse;
+import com.nutritrack.dto.FullFoodResponse;
+import com.nutritrack.dto.PortionResponse;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class FoodMapper {
 
@@ -19,7 +22,7 @@ public class FoodMapper {
     }
 
     public static FullFoodResponse toFullFoodResponse(Food food, Nutrition nutrition, Sustainability sustainability,
-            Portion portion) {
+            List<Portion> portions) {
         FullFoodResponse response = new FullFoodResponse();
         response.setId(food.getId());
         response.setTitle(food.getTitle());
@@ -39,11 +42,21 @@ public class FoodMapper {
             response.setVeganOrVegetarian(sustainability.getVeganOrVegetarian());
         }
 
-        if (portion != null) {
-            response.setPortionLabel(portion.getPortionLabel());
-            response.setAmountPerPortion(portion.getAmountPerPortion());
+        if (portions != null) {
+            List<PortionResponse> portionResponses = portions.stream()
+                    .map(FoodMapper::toPortionResponse)
+                    .collect(Collectors.toList());
+            response.setPortions(portionResponses);
         }
 
+        return response;
+    }
+
+    private static PortionResponse toPortionResponse(Portion portion) {
+        PortionResponse response = new PortionResponse();
+        response.setPortionId(portion.getPortionId());
+        response.setPortionLabel(portion.getPortionLabel());
+        response.setAmountPerPortion(portion.getAmountPerPortion());
         return response;
     }
 }

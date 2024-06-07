@@ -6,7 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 
 import jakarta.persistence.*;
-import java.sql.Date;
+import java.util.Date;
 
 @Data
 @Entity
@@ -44,5 +44,5 @@ public class DailyIntake {
     private Double fat;
 
     @Column(nullable = false)
-    private Integer quantity;
+    private Double quantity;
 }
