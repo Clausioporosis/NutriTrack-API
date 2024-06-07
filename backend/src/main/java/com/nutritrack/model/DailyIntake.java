@@ -6,7 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 
 import jakarta.persistence.*;
-import java.util.Date;
+import java.sql.Date;
 
 @Data
 @Entity
@@ -25,7 +25,7 @@ public class DailyIntake {
     private Food food;
 
     @ManyToOne
-    @JoinColumn(name = "portionId", nullable = false)
+    @JoinColumn(name = "portionId", nullable = true)
     private Portion portion;
 
     @Column(nullable = false)

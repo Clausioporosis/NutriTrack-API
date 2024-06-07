@@ -7,6 +7,6 @@ import java.util.Date;
 public class DailyIntakeRequest {
     private Long foodId;
     private Long portionId;
-    private Date date;
     private Double quantity;
+    private String date;
 }
