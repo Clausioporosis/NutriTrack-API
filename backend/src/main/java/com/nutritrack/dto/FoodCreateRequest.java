@@ -19,10 +19,10 @@ public class FoodCreateRequest {
 
     @Data
     public static class NutritionRequest {
-        private float calories;
-        private float protein;
-        private float carbs;
-        private float fat;
+        private int calories;
+        private int protein;
+        private int carbs;
+        private int fat;
     }
 
     @Data

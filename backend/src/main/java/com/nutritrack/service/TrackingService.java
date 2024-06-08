@@ -44,6 +44,9 @@ public class TrackingService {
     @Autowired
     private TrackingMapper trackingMapper;
 
+    @Autowired
+    private DailyUserStatsService dailyUserStatsService;
+
     @Transactional
     public TrackingResponse createTracking(Long userId, TrackingCreateRequest request) {
         User user = userRepository.findById(userId)
@@ -64,6 +67,7 @@ public class TrackingService {
         tracking.setTimestamp(LocalDateTime.now());
 
         Tracking savedTracking = trackingRepository.save(tracking);
+        dailyUserStatsService.saveDailyStats(userId, LocalDate.now(), getTrackingsByUserId(userId));
         return trackingMapper.toResponse(savedTracking);
     }
 
@@ -77,6 +81,8 @@ public class TrackingService {
         Tracking tracking = trackingRepository.findById(trackingId)
                 .orElseThrow(() -> new ResourceNotFoundException("Tracking entry not found with id: " + trackingId));
         trackingRepository.delete(tracking);
+        dailyUserStatsService.saveDailyStats(tracking.getUser().getId(), LocalDate.now(),
+                getTrackingsByUserId(tracking.getUser().getId()));
     }
 
     @Transactional
@@ -93,6 +99,8 @@ public class TrackingService {
         tracking.setQuantity(request.getQuantity());
 
         Tracking updatedTracking = trackingRepository.save(tracking);
+        dailyUserStatsService.saveDailyStats(tracking.getUser().getId(), LocalDate.now(),
+                getTrackingsByUserId(tracking.getUser().getId()));
         return trackingMapper.toResponse(updatedTracking);
     }
 
@@ -114,37 +122,6 @@ public class TrackingService {
     }
 
     private DailyTrackingSummary.DailySummary calculateDailySummary(List<Tracking> trackings) {
-        DailyTrackingSummary.DailySummary dailySummary = new DailyTrackingSummary.DailySummary();
-        for (Tracking tracking : trackings) {
-            Food food = tracking.getFood();
-
-            float portionQuantity;
-            if (tracking.getPortion() != null) {
-                portionQuantity = tracking.getPortion().getQuantity() * tracking.getQuantity();
-            } else {
-                portionQuantity = tracking.getQuantity();
-            }
-
-            float portionMultiplier = portionQuantity / 100;
-
-            // Berechnungen der Nährwerte und CO2-Emissionen basierend auf der Gesamtmenge
-            dailySummary.setTotalCalories(
-                    dailySummary.getTotalCalories() + (food.getNutrition().getCalories() * portionMultiplier));
-            dailySummary.setTotalProtein(
-                    dailySummary.getTotalProtein() + (food.getNutrition().getProtein() * portionMultiplier));
-            dailySummary.setTotalCarbs(
-                    dailySummary.getTotalCarbs() + (food.getNutrition().getCarbs() * portionMultiplier));
-            dailySummary.setTotalFat(
-                    dailySummary.getTotalFat() + (food.getNutrition().getFat() * portionMultiplier));
-            dailySummary.setTotalCo2(
-                    dailySummary.getTotalCo2() + (food.getSustainability().getCo2perKg() * portionQuantity / 1000));
-
-            if (food.getSustainability().getDietType() == DietType.VEGAN) {
-                dailySummary.setTotalVeganMeals(dailySummary.getTotalVeganMeals() + 1);
-            } else if (food.getSustainability().getDietType() == DietType.VEGETARIAN) {
-                dailySummary.setTotalVegetarianMeals(dailySummary.getTotalVegetarianMeals() + 1);
-            }
-        }
-        return dailySummary;
+        return dailyUserStatsService.calculateDailySummary(trackings);
     }
 }

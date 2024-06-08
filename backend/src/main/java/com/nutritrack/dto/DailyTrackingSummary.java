@@ -1,6 +1,8 @@
 package com.nutritrack.dto;
 
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.List;
 
@@ -18,5 +20,6 @@ public class DailyTrackingSummary {
         private float totalCo2;
         private int totalVeganMeals;
         private int totalVegetarianMeals;
+        private int dailyPoints;
     }
 }

@@ -21,10 +21,10 @@ public class FoodResponse {
 
     @Data
     public static class NutritionResponse {
-        private float calories;
-        private float protein;
-        private float carbs;
-        private float fat;
+        private int calories;
+        private int protein;
+        private int carbs;
+        private int fat;
     }
 
     @Data

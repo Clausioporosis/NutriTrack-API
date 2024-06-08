@@ -27,7 +27,7 @@ public class DailyUserStats {
 
     @Column(nullable = false)
     @Schema(description = "Total CO2 emissions caused by the user's food consumption on this day, in kilograms")
-    private double dailyCo2Emissions;
+    private float dailyCo2Emissions;
 
     @Column(nullable = false)
     @Schema(description = "Total number of vegan meals consumed by the user on this day")
@@ -36,4 +36,8 @@ public class DailyUserStats {
     @Column(nullable = false)
     @Schema(description = "Total number of vegetarian meals consumed by the user on this day")
     private int dailyVegetarianMeals;
+
+    @Column(nullable = false)
+    @Schema(description = "Total points accumulated by the user on this day")
+    private int dailyPoints;
 }

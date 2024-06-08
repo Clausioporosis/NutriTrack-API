@@ -12,10 +12,10 @@ public class Nutrition {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private float calories;
-    private float protein;
-    private float carbs;
-    private float fat;
+    private int calories;
+    private int protein;
+    private int carbs;
+    private int fat;
 
     @OneToOne(mappedBy = "nutrition", fetch = FetchType.LAZY)
     @JsonBackReference
