@@ -6,5 +6,5 @@ import lombok.Data;
 @Data
 public class TrackingUpdateRequest {
     private Long portionId;
-    private double quantity;
+    private float quantity;
 }

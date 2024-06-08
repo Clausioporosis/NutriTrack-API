@@ -16,7 +16,7 @@ public class TrackingResponse {
     private boolean IsLiquid;
     private Long portionId;
     private String portionLabel;
-    private double portionQuantity;
-    private double quantity;
+    private float portionQuantity;
+    private float quantity;
     private LocalDateTime timestamp;
 }

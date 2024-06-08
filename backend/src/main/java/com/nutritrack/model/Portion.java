@@ -13,7 +13,7 @@ public class Portion {
     private Long id;
 
     private String label;
-    private double quantity;
+    private float quantity;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "food_id")

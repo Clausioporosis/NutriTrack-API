@@ -19,15 +19,15 @@ public class FoodCreateRequest {
 
     @Data
     public static class NutritionRequest {
-        private double calories;
-        private double protein;
-        private double carbs;
-        private double fat;
+        private float calories;
+        private float protein;
+        private float carbs;
+        private float fat;
     }
 
     @Data
     public static class SustainabilityRequest {
-        private double co2perKg;
+        private float co2perKg;
         @Schema(example = "OMNIVORE|VEGETARIAN|VEGAN")
         private DietType dietType;
     }
@@ -35,6 +35,6 @@ public class FoodCreateRequest {
     @Data
     public static class PortionCreateRequest {
         private String label;
-        private double quantity;
+        private float quantity;
     }
 }

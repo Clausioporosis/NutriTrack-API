@@ -21,15 +21,15 @@ public class FoodResponse {
 
     @Data
     public static class NutritionResponse {
-        private double calories;
-        private double protein;
-        private double carbs;
-        private double fat;
+        private float calories;
+        private float protein;
+        private float carbs;
+        private float fat;
     }
 
     @Data
     public static class SustainabilityResponse {
-        private double co2perKg;
+        private float co2perKg;
         @Schema(example = "OMNIVORE|VEGETARIAN|VEGAN")
         private DietType dietType;
     }
@@ -38,6 +38,6 @@ public class FoodResponse {
     public static class PortionResponse {
         private Long id;
         private String label;
-        private double quantity;
+        private float quantity;
     }
 }

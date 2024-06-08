@@ -12,7 +12,7 @@ public class Sustainability {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private double co2perKg;
+    private float co2perKg;
 
     @Enumerated(EnumType.STRING)
     private DietType dietType;

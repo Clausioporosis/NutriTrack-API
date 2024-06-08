@@ -11,5 +11,5 @@ public class TrackingCreateRequest {
     private Long portionId;
 
     @Schema(required = true)
-    private double quantity;
+    private float quantity;
 }
