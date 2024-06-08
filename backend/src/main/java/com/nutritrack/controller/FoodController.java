@@ -3,7 +3,7 @@ package com.nutritrack.controller;
 import com.nutritrack.dto.FoodCreateRequest;
 import com.nutritrack.dto.FoodResponse;
 import com.nutritrack.dto.FoodUpdateRequest;
-import com.nutritrack.dto.SimpleFoodDTO;
+import com.nutritrack.dto.SimpleFoodResponse;
 import com.nutritrack.service.FoodService;
 import com.nutritrack.util.SecurityUtil;
 import io.swagger.v3.oas.annotations.Operation;
@@ -74,9 +74,9 @@ public class FoodController {
             @ApiResponse(responseCode = "200", description = "Found the foods")
     })
     @GetMapping("/user/simple")
-    public ResponseEntity<List<SimpleFoodDTO>> getSimpleFoodsByUser() {
+    public ResponseEntity<List<SimpleFoodResponse>> getSimpleFoodsByUser() {
         Long userId = securityUtil.getUserIdFromToken();
-        List<SimpleFoodDTO> foods = foodService.getSimpleFoodsByUserId(userId);
+        List<SimpleFoodResponse> foods = foodService.getSimpleFoodsByUserId(userId);
         return ResponseEntity.ok(foods);
     }
 
@@ -85,9 +85,9 @@ public class FoodController {
             @ApiResponse(responseCode = "200", description = "Found the foods")
     })
     @GetMapping("/user/simple/search")
-    public ResponseEntity<List<SimpleFoodDTO>> searchFoodsByTitle(@RequestParam String title) {
+    public ResponseEntity<List<SimpleFoodResponse>> searchFoodsByTitle(@RequestParam String title) {
         Long userId = securityUtil.getUserIdFromToken();
-        List<SimpleFoodDTO> foods = foodService.searchFoodsByTitle(userId, title);
+        List<SimpleFoodResponse> foods = foodService.searchFoodsByTitle(userId, title);
         return ResponseEntity.ok(foods);
     }
 

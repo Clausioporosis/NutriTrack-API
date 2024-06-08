@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class SimpleFoodDTO {
+public class SimpleFoodResponse {
     private Long id;
     private String title;
     private String brand;

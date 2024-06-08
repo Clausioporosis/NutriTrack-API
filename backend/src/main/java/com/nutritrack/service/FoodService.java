@@ -3,7 +3,7 @@ package com.nutritrack.service;
 import com.nutritrack.dto.FoodCreateRequest;
 import com.nutritrack.dto.FoodResponse;
 import com.nutritrack.dto.FoodUpdateRequest;
-import com.nutritrack.dto.SimpleFoodDTO;
+import com.nutritrack.dto.SimpleFoodResponse;
 import com.nutritrack.exception.ResourceNotFoundException;
 import com.nutritrack.model.*;
 import com.nutritrack.repository.FoodRepository;
@@ -62,17 +62,17 @@ public class FoodService {
         return foodMapper.toResponse(food);
     }
 
-    public List<SimpleFoodDTO> getSimpleFoodsByUserId(Long userId) {
+    public List<SimpleFoodResponse> getSimpleFoodsByUserId(Long userId) {
         List<Food> foods = foodRepository.findByUserId(userId);
         return foods.stream()
-                .map(food -> new SimpleFoodDTO(food.getId(), food.getTitle(), food.getBrand(), food.getCategory()))
+                .map(food -> new SimpleFoodResponse(food.getId(), food.getTitle(), food.getBrand(), food.getCategory()))
                 .collect(Collectors.toList());
     }
 
-    public List<SimpleFoodDTO> searchFoodsByTitle(Long userId, String title) {
+    public List<SimpleFoodResponse> searchFoodsByTitle(Long userId, String title) {
         List<Food> foods = foodRepository.findByUserIdAndTitleContaining(userId, title);
         return foods.stream()
-                .map(food -> new SimpleFoodDTO(food.getId(), food.getTitle(), food.getBrand(), food.getCategory()))
+                .map(food -> new SimpleFoodResponse(food.getId(), food.getTitle(), food.getBrand(), food.getCategory()))
                 .collect(Collectors.toList());
     }
 
