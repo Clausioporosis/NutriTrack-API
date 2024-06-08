@@ -11,4 +11,8 @@ public interface FoodRepository extends JpaRepository<Food, Long> {
     List<Food> findByUserId(Long userId);
 
     List<Food> findByUserIdAndTitleContaining(Long userId, String title);
+
+    List<Food> findByUserIdAndDeactivatedFalse(Long userId);
+
+    List<Food> findByUserIdAndTitleContainingAndDeactivatedFalse(Long userId, String title);
 }

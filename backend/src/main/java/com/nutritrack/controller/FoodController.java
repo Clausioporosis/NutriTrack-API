@@ -51,12 +51,23 @@ public class FoodController {
         return ResponseEntity.ok(foodResponse);
     }
 
+    @Operation(summary = "Deactivate a food by its ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Food deactivated successfully"),
+            @ApiResponse(responseCode = "404", description = "Food not found")
+    })
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deactivateFoodById(@PathVariable Long id) {
+        foodService.deactivateFoodById(id);
+        return ResponseEntity.noContent().build();
+    }
+
     @Operation(summary = "Delete a food by its ID")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Food deleted successfully"),
             @ApiResponse(responseCode = "404", description = "Food not found")
     })
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{id}/hard-delete")
     public ResponseEntity<Void> deleteFoodById(@PathVariable Long id) {
         foodService.deleteFoodById(id);
         return ResponseEntity.noContent().build();

@@ -12,6 +12,7 @@ public class FoodCreateRequest {
     private String title;
     private String brand;
     private String category;
+    private boolean isLiquid;
     private NutritionRequest nutrition;
     private SustainabilityRequest sustainability;
     private List<PortionCreateRequest> portions;

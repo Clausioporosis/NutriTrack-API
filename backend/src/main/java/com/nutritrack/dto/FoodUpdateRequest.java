@@ -12,9 +12,11 @@ public class FoodUpdateRequest {
     private String title;
     private String brand;
     private String category;
+    private boolean isLiquid;
     private NutritionRequest nutrition;
     private SustainabilityRequest sustainability;
     private List<PortionUpdateRequest> portions;
+    private boolean deactivated;
 
     @Data
     public static class NutritionRequest {

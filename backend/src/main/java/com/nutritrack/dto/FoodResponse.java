@@ -12,9 +12,11 @@ public class FoodResponse {
     private String title;
     private String brand;
     private String category;
+    private boolean isLiquid;
     private NutritionResponse nutrition;
     private SustainabilityResponse sustainability;
     private List<PortionResponse> portions;
+    private boolean deactivated;
 
     @Data
     public static class NutritionResponse {

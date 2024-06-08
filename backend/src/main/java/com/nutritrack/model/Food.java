@@ -21,6 +21,7 @@ public class Food {
     private String title;
     private String brand;
     private String category;
+    private boolean isLiquid;
 
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "nutrition_id")
@@ -40,4 +41,7 @@ public class Food {
     @JoinColumn(name = "user_id")
     @JsonIgnore
     private User user;
+
+    @Column(nullable = false)
+    private boolean deactivated = false;
 }

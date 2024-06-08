@@ -3,13 +3,10 @@ package com.nutritrack.mapper;
 import com.nutritrack.dto.FoodCreateRequest;
 import com.nutritrack.dto.FoodUpdateRequest;
 import com.nutritrack.dto.FoodResponse;
-import com.nutritrack.dto.FoodCreateRequest.NutritionRequest;
-import com.nutritrack.dto.FoodCreateRequest.SustainabilityRequest;
-import com.nutritrack.dto.FoodCreateRequest.PortionCreateRequest;
-import com.nutritrack.dto.FoodUpdateRequest.PortionUpdateRequest;
 import com.nutritrack.dto.FoodResponse.NutritionResponse;
 import com.nutritrack.dto.FoodResponse.SustainabilityResponse;
 import com.nutritrack.dto.FoodResponse.PortionResponse;
+import com.nutritrack.dto.SimpleFoodResponse;
 import com.nutritrack.model.*;
 
 import org.springframework.stereotype.Component;
@@ -25,6 +22,7 @@ public class FoodMapper {
         food.setTitle(foodCreateRequest.getTitle());
         food.setBrand(foodCreateRequest.getBrand());
         food.setCategory(foodCreateRequest.getCategory());
+        food.setLiquid(foodCreateRequest.isLiquid()); // Set the isLiquid field
 
         // Create and set nutrition and sustainability information
         food.setNutrition(toNutrition(foodCreateRequest.getNutrition(), food));
@@ -41,6 +39,7 @@ public class FoodMapper {
 
         // Set the user reference
         food.setUser(user);
+        food.setDeactivated(false);
 
         return food;
     }
@@ -50,6 +49,7 @@ public class FoodMapper {
         existingFood.setTitle(foodUpdateRequest.getTitle());
         existingFood.setBrand(foodUpdateRequest.getBrand());
         existingFood.setCategory(foodUpdateRequest.getCategory());
+        existingFood.setLiquid(foodUpdateRequest.isLiquid()); // Set the isLiquid field
 
         // Update nutrition and sustainability information
         existingFood.setNutrition(toNutrition(foodUpdateRequest.getNutrition(), existingFood));
@@ -79,6 +79,9 @@ public class FoodMapper {
         // Set the user reference
         existingFood.setUser(user);
 
+        // Update deactivation status
+        existingFood.setDeactivated(foodUpdateRequest.isDeactivated());
+
         return existingFood;
     }
 
@@ -88,6 +91,8 @@ public class FoodMapper {
         foodResponse.setTitle(food.getTitle());
         foodResponse.setBrand(food.getBrand());
         foodResponse.setCategory(food.getCategory());
+        foodResponse.setDeactivated(food.isDeactivated());
+        foodResponse.setLiquid(food.isLiquid()); // Set the isLiquid field
 
         // Map nutrition and sustainability information
         foodResponse.setNutrition(toNutritionResponse(food.getNutrition()));
@@ -104,6 +109,13 @@ public class FoodMapper {
 
         return foodResponse;
     }
+
+    // Method to convert Food entity to SimpleFoodResponse DTO
+    public SimpleFoodResponse toSimpleResponse(Food food) {
+        return new SimpleFoodResponse(food.getId(), food.getTitle(), food.getBrand(), food.getCategory());
+    }
+
+    // Helper methods...
 
     // Helper method to create Nutrition entity
     private Nutrition toNutrition(FoodCreateRequest.NutritionRequest nutritionRequest, Food food) {

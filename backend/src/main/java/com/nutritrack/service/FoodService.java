@@ -50,10 +50,18 @@ public class FoodService {
     }
 
     @Transactional
+    public void deactivateFoodById(Long foodId) {
+        Food food = foodRepository.findById(foodId)
+                .orElseThrow(() -> new ResourceNotFoundException("Food not found with id: " + foodId));
+        food.setDeactivated(true); // Set deactivated flag instead of deleting
+        foodRepository.save(food);
+    }
+
+    @Transactional
     public void deleteFoodById(Long foodId) {
         Food food = foodRepository.findById(foodId)
                 .orElseThrow(() -> new ResourceNotFoundException("Food not found with id: " + foodId));
-        foodRepository.delete(food);
+        foodRepository.delete(food); // Actually delete the food from the database
     }
 
     public FoodResponse getFoodById(Long foodId) {
@@ -63,14 +71,14 @@ public class FoodService {
     }
 
     public List<SimpleFoodResponse> getSimpleFoodsByUserId(Long userId) {
-        List<Food> foods = foodRepository.findByUserId(userId);
+        List<Food> foods = foodRepository.findByUserIdAndDeactivatedFalse(userId);
         return foods.stream()
                 .map(food -> new SimpleFoodResponse(food.getId(), food.getTitle(), food.getBrand(), food.getCategory()))
                 .collect(Collectors.toList());
     }
 
     public List<SimpleFoodResponse> searchFoodsByTitle(Long userId, String title) {
-        List<Food> foods = foodRepository.findByUserIdAndTitleContaining(userId, title);
+        List<Food> foods = foodRepository.findByUserIdAndTitleContainingAndDeactivatedFalse(userId, title);
         return foods.stream()
                 .map(food -> new SimpleFoodResponse(food.getId(), food.getTitle(), food.getBrand(), food.getCategory()))
                 .collect(Collectors.toList());
@@ -84,32 +92,8 @@ public class FoodService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
 
-        // Map the basic fields
-        existingFood.setTitle(foodUpdateRequest.getTitle());
-        existingFood.setBrand(foodUpdateRequest.getBrand());
-        existingFood.setCategory(foodUpdateRequest.getCategory());
-
-        // Update nutrition information
-        Nutrition nutrition = existingFood.getNutrition();
-        if (nutrition == null) {
-            nutrition = new Nutrition();
-            existingFood.setNutrition(nutrition);
-        }
-        nutrition.setCalories(foodUpdateRequest.getNutrition().getCalories());
-        nutrition.setProtein(foodUpdateRequest.getNutrition().getProtein());
-        nutrition.setCarbs(foodUpdateRequest.getNutrition().getCarbs());
-        nutrition.setFat(foodUpdateRequest.getNutrition().getFat());
-        nutrition.setFood(existingFood);
-
-        // Update sustainability information
-        Sustainability sustainability = existingFood.getSustainability();
-        if (sustainability == null) {
-            sustainability = new Sustainability();
-            existingFood.setSustainability(sustainability);
-        }
-        sustainability.setCo2perKg(foodUpdateRequest.getSustainability().getCo2perKg());
-        sustainability.setDietType(foodUpdateRequest.getSustainability().getDietType());
-        sustainability.setFood(existingFood);
+        // Update the basic fields and nutrition, sustainability information
+        Food updatedFood = foodMapper.toEntity(foodUpdateRequest, user, existingFood);
 
         // Remove portions not in the request
         List<Long> portionIdsInRequest = foodUpdateRequest.getPortions().stream()
@@ -124,31 +108,7 @@ public class FoodService {
         existingFood.getPortions().removeAll(portionsToRemove);
         portionsToRemove.forEach(portionRepository::delete);
 
-        // Update or add portions
-        for (FoodUpdateRequest.PortionUpdateRequest portionRequest : foodUpdateRequest.getPortions()) {
-            Portion portion;
-            if (portionRequest.getId() != null) {
-                portion = existingFood.getPortions().stream()
-                        .filter(p -> p.getId().equals(portionRequest.getId()))
-                        .findFirst()
-                        .orElse(new Portion());
-            } else {
-                portion = new Portion();
-            }
-
-            portion.setLabel(portionRequest.getLabel());
-            portion.setQuantity(portionRequest.getQuantity());
-            portion.setFood(existingFood);
-
-            if (portion.getId() == null) {
-                existingFood.getPortions().add(portion);
-            }
-        }
-
-        // Set the user reference
-        existingFood.setUser(user);
-
-        Food savedFood = foodRepository.save(existingFood);
+        Food savedFood = foodRepository.save(updatedFood);
         return foodMapper.toResponse(savedFood);
     }
 }
