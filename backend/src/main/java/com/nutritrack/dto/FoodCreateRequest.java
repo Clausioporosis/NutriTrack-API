@@ -3,6 +3,10 @@ package com.nutritrack.dto;
 import lombok.Data;
 import java.util.List;
 
+import com.nutritrack.model.DietType;
+
+import io.swagger.v3.oas.annotations.media.Schema;
+
 @Data
 public class FoodCreateRequest {
     private String title;
@@ -23,7 +27,8 @@ public class FoodCreateRequest {
     @Data
     public static class SustainabilityRequest {
         private double co2perKg;
-        private String dietType;
+        @Schema(example = "OMNIVORE|VEGETARIAN|VEGAN")
+        private DietType dietType;
     }
 
     @Data

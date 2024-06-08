@@ -26,21 +26,9 @@ public class FoodMapper {
         food.setBrand(foodCreateRequest.getBrand());
         food.setCategory(foodCreateRequest.getCategory());
 
-        // Create nutrition information
-        Nutrition nutrition = new Nutrition();
-        nutrition.setCalories(foodCreateRequest.getNutrition().getCalories());
-        nutrition.setProtein(foodCreateRequest.getNutrition().getProtein());
-        nutrition.setCarbs(foodCreateRequest.getNutrition().getCarbs());
-        nutrition.setFat(foodCreateRequest.getNutrition().getFat());
-        food.setNutrition(nutrition);
-        nutrition.setFood(food);
-
-        // Create sustainability information
-        Sustainability sustainability = new Sustainability();
-        sustainability.setCo2perKg(foodCreateRequest.getSustainability().getCo2perKg());
-        sustainability.setDietType(foodCreateRequest.getSustainability().getDietType());
-        food.setSustainability(sustainability);
-        sustainability.setFood(food);
+        // Create and set nutrition and sustainability information
+        food.setNutrition(toNutrition(foodCreateRequest.getNutrition(), food));
+        food.setSustainability(toSustainability(foodCreateRequest.getSustainability(), food));
 
         // Create portions
         food.setPortions(foodCreateRequest.getPortions().stream().map(portionRequest -> {
@@ -63,34 +51,21 @@ public class FoodMapper {
         existingFood.setBrand(foodUpdateRequest.getBrand());
         existingFood.setCategory(foodUpdateRequest.getCategory());
 
-        // Update nutrition information
-        Nutrition nutrition = existingFood.getNutrition();
-        if (nutrition == null) {
-            nutrition = new Nutrition();
-        }
-        nutrition.setCalories(foodUpdateRequest.getNutrition().getCalories());
-        nutrition.setProtein(foodUpdateRequest.getNutrition().getProtein());
-        nutrition.setCarbs(foodUpdateRequest.getNutrition().getCarbs());
-        nutrition.setFat(foodUpdateRequest.getNutrition().getFat());
-        existingFood.setNutrition(nutrition);
-        nutrition.setFood(existingFood);
-
-        // Update sustainability information
-        Sustainability sustainability = existingFood.getSustainability();
-        if (sustainability == null) {
-            sustainability = new Sustainability();
-        }
-        sustainability.setCo2perKg(foodUpdateRequest.getSustainability().getCo2perKg());
-        sustainability.setDietType(foodUpdateRequest.getSustainability().getDietType());
-        existingFood.setSustainability(sustainability);
-        sustainability.setFood(existingFood);
+        // Update nutrition and sustainability information
+        existingFood.setNutrition(toNutrition(foodUpdateRequest.getNutrition(), existingFood));
+        existingFood.setSustainability(toSustainability(foodUpdateRequest.getSustainability(), existingFood));
 
         // Update or add portions
-        foodUpdateRequest.getPortions().forEach(portionRequest -> {
-            Portion portion = existingFood.getPortions().stream()
-                    .filter(p -> portionRequest.getId() != null && p.getId().equals(portionRequest.getId()))
-                    .findFirst()
-                    .orElse(new Portion());
+        for (FoodUpdateRequest.PortionUpdateRequest portionRequest : foodUpdateRequest.getPortions()) {
+            Portion portion;
+            if (portionRequest.getId() != null) {
+                portion = existingFood.getPortions().stream()
+                        .filter(p -> p.getId().equals(portionRequest.getId()))
+                        .findFirst()
+                        .orElse(new Portion());
+            } else {
+                portion = new Portion();
+            }
 
             portion.setLabel(portionRequest.getLabel());
             portion.setQuantity(portionRequest.getQuantity());
@@ -99,7 +74,7 @@ public class FoodMapper {
             if (portion.getId() == null) {
                 existingFood.getPortions().add(portion);
             }
-        });
+        }
 
         // Set the user reference
         existingFood.setUser(user);
@@ -114,25 +89,9 @@ public class FoodMapper {
         foodResponse.setBrand(food.getBrand());
         foodResponse.setCategory(food.getCategory());
 
-        // Map nutrition information
-        NutritionResponse nutritionResponse = new NutritionResponse();
-        Nutrition nutrition = food.getNutrition();
-        if (nutrition != null) {
-            nutritionResponse.setCalories(nutrition.getCalories());
-            nutritionResponse.setProtein(nutrition.getProtein());
-            nutritionResponse.setCarbs(nutrition.getCarbs());
-            nutritionResponse.setFat(nutrition.getFat());
-        }
-        foodResponse.setNutrition(nutritionResponse);
-
-        // Map sustainability information
-        SustainabilityResponse sustainabilityResponse = new SustainabilityResponse();
-        Sustainability sustainability = food.getSustainability();
-        if (sustainability != null) {
-            sustainabilityResponse.setCo2perKg(sustainability.getCo2perKg());
-            sustainabilityResponse.setDietType(sustainability.getDietType());
-        }
-        foodResponse.setSustainability(sustainabilityResponse);
+        // Map nutrition and sustainability information
+        foodResponse.setNutrition(toNutritionResponse(food.getNutrition()));
+        foodResponse.setSustainability(toSustainabilityResponse(food.getSustainability()));
 
         // Map portions
         foodResponse.setPortions(food.getPortions().stream().map(portion -> {
@@ -144,5 +103,81 @@ public class FoodMapper {
         }).collect(Collectors.toList()));
 
         return foodResponse;
+    }
+
+    // Helper method to create Nutrition entity
+    private Nutrition toNutrition(FoodCreateRequest.NutritionRequest nutritionRequest, Food food) {
+        if (nutritionRequest == null) {
+            return null;
+        }
+        Nutrition nutrition = new Nutrition();
+        nutrition.setCalories(nutritionRequest.getCalories());
+        nutrition.setProtein(nutritionRequest.getProtein());
+        nutrition.setCarbs(nutritionRequest.getCarbs());
+        nutrition.setFat(nutritionRequest.getFat());
+        nutrition.setFood(food);
+        return nutrition;
+    }
+
+    // Helper method to update Nutrition entity
+    private Nutrition toNutrition(FoodUpdateRequest.NutritionRequest nutritionRequest, Food food) {
+        Nutrition nutrition = food.getNutrition();
+        if (nutrition == null) {
+            nutrition = new Nutrition();
+        }
+        nutrition.setCalories(nutritionRequest.getCalories());
+        nutrition.setProtein(nutritionRequest.getProtein());
+        nutrition.setCarbs(nutritionRequest.getCarbs());
+        nutrition.setFat(nutritionRequest.getFat());
+        nutrition.setFood(food);
+        return nutrition;
+    }
+
+    // Helper method to create Sustainability entity
+    private Sustainability toSustainability(FoodCreateRequest.SustainabilityRequest sustainabilityRequest, Food food) {
+        if (sustainabilityRequest == null) {
+            return null;
+        }
+        Sustainability sustainability = new Sustainability();
+        sustainability.setCo2perKg(sustainabilityRequest.getCo2perKg());
+        sustainability.setDietType(sustainabilityRequest.getDietType());
+        sustainability.setFood(food);
+        return sustainability;
+    }
+
+    // Helper method to update Sustainability entity
+    private Sustainability toSustainability(FoodUpdateRequest.SustainabilityRequest sustainabilityRequest, Food food) {
+        Sustainability sustainability = food.getSustainability();
+        if (sustainability == null) {
+            sustainability = new Sustainability();
+        }
+        sustainability.setCo2perKg(sustainabilityRequest.getCo2perKg());
+        sustainability.setDietType(sustainabilityRequest.getDietType());
+        sustainability.setFood(food);
+        return sustainability;
+    }
+
+    // Helper method to convert Nutrition entity to NutritionResponse
+    private NutritionResponse toNutritionResponse(Nutrition nutrition) {
+        if (nutrition == null) {
+            return null;
+        }
+        NutritionResponse nutritionResponse = new NutritionResponse();
+        nutritionResponse.setCalories(nutrition.getCalories());
+        nutritionResponse.setProtein(nutrition.getProtein());
+        nutritionResponse.setCarbs(nutrition.getCarbs());
+        nutritionResponse.setFat(nutrition.getFat());
+        return nutritionResponse;
+    }
+
+    // Helper method to convert Sustainability entity to SustainabilityResponse
+    private SustainabilityResponse toSustainabilityResponse(Sustainability sustainability) {
+        if (sustainability == null) {
+            return null;
+        }
+        SustainabilityResponse sustainabilityResponse = new SustainabilityResponse();
+        sustainabilityResponse.setCo2perKg(sustainability.getCo2perKg());
+        sustainabilityResponse.setDietType(sustainability.getDietType());
+        return sustainabilityResponse;
     }
 }

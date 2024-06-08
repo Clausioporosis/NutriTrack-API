@@ -13,7 +13,9 @@ public class Sustainability {
     private Long id;
 
     private double co2perKg;
-    private String dietType;
+
+    @Enumerated(EnumType.STRING)
+    private DietType dietType;
 
     @OneToOne(mappedBy = "sustainability", fetch = FetchType.LAZY)
     @JsonBackReference
