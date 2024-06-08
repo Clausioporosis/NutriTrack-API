@@ -2,42 +2,22 @@ package com.nutritrack.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import io.swagger.v3.oas.annotations.media.Schema;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 @Data
 @Entity
-@Table(name = "nutritions", indexes = {
-        @Index(name = "idx_food_id", columnList = "food_id")
-})
-@Schema(description = "Nutrition entity representing nutritional information of a food item")
+@Table(name = "nutrition")
 public class Nutrition {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Schema(description = "Unique identifier of the nutrition information")
     private Long id;
 
-    @Column(nullable = false)
-    @Schema(description = "Flag indicating if the food is a liquid")
-    private boolean isLiquid;
+    private double calories;
+    private double protein;
+    private double carbs;
+    private double fat;
 
-    @Column(nullable = false)
-    @Schema(description = "Calories per 100g or 100ml of the food")
-    private float calories;
-
-    @Column(nullable = false)
-    @Schema(description = "Protein content per 100g or 100ml of the food in grams")
-    private float protein;
-
-    @Column(nullable = false)
-    @Schema(description = "Carbohydrate content per 100g or 100ml of the food in grams")
-    private float carbs;
-
-    @Column(nullable = false)
-    @Schema(description = "Fat content per 100g or 100ml of the food in grams")
-    private float fat;
-
-    @OneToOne
-    @JoinColumn(name = "food_id", nullable = false)
-    @Schema(description = "Food item associated with the nutrition information")
+    @OneToOne(mappedBy = "nutrition", fetch = FetchType.LAZY)
+    @JsonBackReference
     private Food food;
 }

@@ -21,7 +21,7 @@ public class RegisterRequest {
     private String email;
 
     @NotBlank
-    @Size(min = 8, max = 255)
+    @Size(min = 6, max = 255)
     @Schema(description = "Password of the user, must be at least 8 characters long")
     private String password;
 

@@ -3,43 +3,39 @@ package com.nutritrack.model;
 import jakarta.persistence.*;
 import lombok.Data;
 import io.swagger.v3.oas.annotations.media.Schema;
+
 import java.time.LocalDateTime;
 
 @Data
 @Entity
-@Table(name = "trackings", indexes = {
-        @Index(name = "idx_user_id", columnList = "user_id"),
-        @Index(name = "idx_food_id", columnList = "food_id"),
-        @Index(name = "idx_portion_id", columnList = "portion_id"),
-        @Index(name = "idx_datetime", columnList = "datetime")
-})
-@Schema(description = "Tracking entity representing a food tracking entry")
+@Table(name = "tracking")
+@Schema(description = "Represents a tracking entry for food consumption")
 public class Tracking {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Schema(description = "Unique identifier of the tracking entry")
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     @Schema(description = "User who tracked the food")
     private User user;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "food_id", nullable = false)
-    @Schema(description = "Food item being tracked")
+    @Schema(description = "Food that was tracked")
     private Food food;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "portion_id", nullable = true)
-    @Schema(description = "Portion of the food item being tracked")
+    @Schema(description = "Portion size that was tracked")
     private Portion portion;
 
     @Column(nullable = false)
-    @Schema(description = "Date and time of the tracking entry")
-    private LocalDateTime datetime;
+    @Schema(description = "Quantity of the food tracked")
+    private float quantity;
 
     @Column(nullable = false)
-    @Schema(description = "Quantity of the food item being tracked")
-    private float quantity;
+    @Schema(description = "Date and time when the food was tracked")
+    private LocalDateTime timestamp;
 }

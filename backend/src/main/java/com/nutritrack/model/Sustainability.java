@@ -1,26 +1,21 @@
 package com.nutritrack.model;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-
 import jakarta.persistence.*;
+import lombok.Data;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 @Data
 @Entity
-@Table(name = "Sustainability")
+@Table(name = "sustainability")
 public class Sustainability {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long sustainabilityId;
+    private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "foodId", nullable = false)
+    private double co2perKg;
+    private String dietType;
+
+    @OneToOne(mappedBy = "sustainability", fetch = FetchType.LAZY)
+    @JsonBackReference
     private Food food;
-
-    private Double co2Footprint;
-
-    @Column(length = 50)
-    private String veganOrVegetarian;
 }

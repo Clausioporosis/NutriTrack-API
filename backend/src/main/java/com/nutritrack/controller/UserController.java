@@ -5,7 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import com.nutritrack.model.User;
+import com.nutritrack.dto.UserResponse;
 import com.nutritrack.service.UserService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -13,7 +13,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 import com.nutritrack.util.SecurityUtil;
 
-import jakarta.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -31,39 +30,25 @@ public class UserController {
         this.securityUtil = securityUtil;
     }
 
+    @Operation(summary = "Get current user details")
     @GetMapping("/me")
-    public ResponseEntity<User> getCurrentUser() {
+    public UserResponse getCurrentUser() {
         Long userId = securityUtil.getUserIdFromToken();
-        User user = userService.getUserById(userId);
-        return new ResponseEntity<>(user, HttpStatus.OK);
-    }
-
-    @Operation(summary = "Create a new user")
-    @PostMapping
-    public ResponseEntity<User> createUser(@Valid @RequestBody User user) {
-        User createdUser = userService.createUser(user);
-        return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
+        return userService.getUserById(userId);
     }
 
     @Operation(summary = "Get all users")
     @GetMapping
-    public ResponseEntity<List<User>> getAllUsers() {
-        List<User> users = userService.getAllUsers();
+    public ResponseEntity<List<UserResponse>> getAllUsers() {
+        List<UserResponse> users = userService.getAllUsers();
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
     @Operation(summary = "Get user by ID")
     @GetMapping("/{id}")
-    public ResponseEntity<User> getUserById(@PathVariable Long id) {
-        User user = userService.getUserById(id);
+    public ResponseEntity<UserResponse> getUserById(@PathVariable Long id) {
+        UserResponse user = userService.getUserById(id);
         return new ResponseEntity<>(user, HttpStatus.OK);
-    }
-
-    @Operation(summary = "Update an existing user")
-    @PutMapping("/{id}")
-    public ResponseEntity<User> updateUser(@PathVariable Long id, @Valid @RequestBody User user) {
-        User updatedUser = userService.updateUser(id, user);
-        return new ResponseEntity<>(updatedUser, HttpStatus.OK);
     }
 
     @Operation(summary = "Delete a user")
@@ -75,8 +60,8 @@ public class UserController {
 
     @Operation(summary = "Search users by keyword")
     @GetMapping("/search")
-    public ResponseEntity<List<User>> searchUsers(@RequestParam String keyword) {
-        List<User> users = userService.searchUsers(keyword);
+    public ResponseEntity<List<UserResponse>> searchUsers(@RequestParam String keyword) {
+        List<UserResponse> users = userService.searchUsers(keyword);
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
 }

@@ -12,34 +12,17 @@ import java.util.List;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Schema(description = "Unique identifier of the user")
     private Long id;
 
-    @Column(nullable = false, unique = true, length = 50)
-    @Schema(description = "Username of the user, must be unique")
     private String username;
-
-    @Column(nullable = false, unique = true, length = 100)
-    @Schema(description = "Email of the user, used for login and notifications")
     private String email;
-
-    @Column(nullable = false, length = 255)
-    @Schema(description = "Password of the user, should be stored in a hashed format")
     private String password;
-
-    @Column(nullable = false, length = 50)
-    @Schema(description = "First name of the user")
     private String firstName;
-
-    @Column(nullable = false, length = 50)
-    @Schema(description = "Last name of the user")
     private String lastName;
 
-    @OneToMany(mappedBy = "user")
-    @Schema(description = "List of foods created by the user")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Food> foods;
 
-    @OneToMany(mappedBy = "user")
-    @Schema(description = "List of trackings associated with the user")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Tracking> trackings;
 }

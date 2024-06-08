@@ -8,10 +8,12 @@ import org.springframework.transaction.annotation.Transactional;
 import com.nutritrack.model.User;
 import com.nutritrack.repository.UserRepository;
 import com.nutritrack.exception.ResourceNotFoundException;
+import com.nutritrack.dto.UserResponse;
 
 import jakarta.persistence.criteria.Predicate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -25,23 +27,27 @@ public class UserService {
     }
 
     @Transactional
-    public User createUser(User user) {
+    public UserResponse createUser(User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword())); // Hash the password
-        return userRepository.save(user);
+        User savedUser = userRepository.save(user);
+        return convertToResponse(savedUser);
     }
 
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
+    public List<UserResponse> getAllUsers() {
+        return userRepository.findAll().stream()
+                .map(this::convertToResponse)
+                .collect(Collectors.toList());
     }
 
-    public User getUserById(Long id) {
-        return userRepository.findById(id)
+    public UserResponse getUserById(Long id) {
+        User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id " + id));
+        return convertToResponse(user);
     }
 
     @Transactional
-    public User updateUser(Long id, User user) {
-        return userRepository.findById(id)
+    public UserResponse updateUser(Long id, User user) {
+        User updatedUser = userRepository.findById(id)
                 .map(existingUser -> {
                     existingUser.setUsername(user.getUsername());
                     existingUser.setEmail(user.getEmail());
@@ -51,6 +57,7 @@ public class UserService {
                     return userRepository.save(existingUser);
                 })
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id " + id));
+        return convertToResponse(updatedUser);
     }
 
     @Transactional
@@ -62,7 +69,7 @@ public class UserService {
         }
     }
 
-    public List<User> searchUsers(String keyword) {
+    public List<UserResponse> searchUsers(String keyword) {
         return userRepository.findAll((root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
 
@@ -75,6 +82,18 @@ public class UserService {
             }
 
             return cb.or(predicates.toArray(new Predicate[0]));
-        });
+        }).stream()
+                .map(this::convertToResponse)
+                .collect(Collectors.toList());
+    }
+
+    private UserResponse convertToResponse(User user) {
+        UserResponse userResponse = new UserResponse();
+        userResponse.setId(user.getId());
+        userResponse.setUsername(user.getUsername());
+        userResponse.setEmail(user.getEmail());
+        userResponse.setFirstName(user.getFirstName());
+        userResponse.setLastName(user.getLastName());
+        return userResponse;
     }
 }
