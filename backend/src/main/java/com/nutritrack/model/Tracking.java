@@ -33,7 +33,7 @@ public class Tracking {
 
     @Column(nullable = false)
     @Schema(description = "Quantity of the food tracked")
-    private float quantity;
+    private double quantity;
 
     @Column(nullable = false)
     @Schema(description = "Date and time when the food was tracked")
