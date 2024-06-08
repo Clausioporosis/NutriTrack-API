@@ -13,6 +13,7 @@ public class TrackingResponse {
     private String foodTitle;
     private String foodBrand;
     private String foodCategory;
+    private boolean IsLiquid;
     private Long portionId;
     private String portionLabel;
     private double portionQuantity;

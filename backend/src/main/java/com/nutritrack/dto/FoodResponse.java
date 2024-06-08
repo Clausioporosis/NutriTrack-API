@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 @Data
 public class FoodResponse {
+    private Long id;
     private String title;
     private String brand;
     private String category;

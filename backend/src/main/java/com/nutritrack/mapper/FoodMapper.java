@@ -88,6 +88,7 @@ public class FoodMapper {
     // Method to convert Food entity to FoodResponse DTO
     public FoodResponse toResponse(Food food) {
         FoodResponse foodResponse = new FoodResponse();
+        foodResponse.setId(food.getId());
         foodResponse.setTitle(food.getTitle());
         foodResponse.setBrand(food.getBrand());
         foodResponse.setCategory(food.getCategory());

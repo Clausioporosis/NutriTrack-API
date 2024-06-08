@@ -14,6 +14,7 @@ public class TrackingMapper {
         response.setFoodTitle(tracking.getFood().getTitle());
         response.setFoodBrand(tracking.getFood().getBrand());
         response.setFoodCategory(tracking.getFood().getCategory());
+        response.setIsLiquid(tracking.getFood().isLiquid());
         if (tracking.getPortion() != null) {
             response.setPortionId(tracking.getPortion().getId());
             response.setPortionLabel(tracking.getPortion().getLabel());
