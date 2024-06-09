@@ -11,5 +11,9 @@ import java.util.List;
 public interface TrackingRepository extends JpaRepository<Tracking, Long> {
     List<Tracking> findByUserId(Long userId);
 
+    List<Tracking> findByFoodId(Long foodId);
+
+    List<Tracking> findByPortionId(Long portionId);
+
     List<Tracking> findByUserIdAndTimestampBetween(Long userId, LocalDateTime start, LocalDateTime end);
 }

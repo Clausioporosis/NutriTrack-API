@@ -26,6 +26,22 @@ public class DailyUserStats {
     private LocalDate date;
 
     @Column(nullable = false)
+    @Schema(description = "Total calories consumed by the user on this day")
+    private float totalCalories;
+
+    @Column(nullable = false)
+    @Schema(description = "Total protein consumed by the user on this day")
+    private float totalProtein;
+
+    @Column(nullable = false)
+    @Schema(description = "Total carbs consumed by the user on this day")
+    private float totalCarbs;
+
+    @Column(nullable = false)
+    @Schema(description = "Total fat consumed by the user on this day")
+    private float totalFat;
+
+    @Column(nullable = false)
     @Schema(description = "Total CO2 emissions caused by the user's food consumption on this day, in kilograms")
     private float dailyCo2Emissions;
 

@@ -29,99 +29,103 @@ import java.util.stream.Collectors;
 @Service
 public class TrackingService {
 
-    @Autowired
-    private TrackingRepository trackingRepository;
+        @Autowired
+        private TrackingRepository trackingRepository;
 
-    @Autowired
-    private UserRepository userRepository;
+        @Autowired
+        private UserRepository userRepository;
 
-    @Autowired
-    private FoodRepository foodRepository;
+        @Autowired
+        private FoodRepository foodRepository;
 
-    @Autowired
-    private PortionRepository portionRepository;
+        @Autowired
+        private PortionRepository portionRepository;
 
-    @Autowired
-    private TrackingMapper trackingMapper;
+        @Autowired
+        private TrackingMapper trackingMapper;
 
-    @Autowired
-    private DailyUserStatsService dailyUserStatsService;
+        @Autowired
+        private DailyUserStatsService dailyUserStatsService;
 
-    @Transactional
-    public TrackingResponse createTracking(Long userId, TrackingCreateRequest request) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
-        Food food = foodRepository.findById(request.getFoodId())
-                .orElseThrow(() -> new ResourceNotFoundException("Food not found with id: " + request.getFoodId()));
+        @Transactional
+        public TrackingResponse createTracking(Long userId, TrackingCreateRequest request) {
+                User user = userRepository.findById(userId)
+                                .orElseThrow(() -> new ResourceNotFoundException("User not found",
+                                                "User not found with id: " + userId));
+                Food food = foodRepository.findById(request.getFoodId())
+                                .orElseThrow(() -> new ResourceNotFoundException("Food not found",
+                                                "Food not found with id: " + request.getFoodId()));
 
-        Portion portion = Optional.ofNullable(request.getPortionId())
-                .map(portionId -> portionRepository.findById(portionId)
-                        .orElseThrow(() -> new ResourceNotFoundException("Portion not found with id: " + portionId)))
-                .orElse(null);
+                Portion portion = Optional.ofNullable(request.getPortionId())
+                                .map(portionId -> portionRepository.findById(portionId)
+                                                .orElseThrow(() -> new ResourceNotFoundException("Portion not found",
+                                                                "Portion not found with id: " + portionId)))
+                                .orElse(null);
 
-        Tracking tracking = new Tracking();
-        tracking.setUser(user);
-        tracking.setFood(food);
-        tracking.setPortion(portion);
-        tracking.setQuantity(request.getQuantity());
-        tracking.setTimestamp(LocalDateTime.now());
+                Tracking tracking = new Tracking();
+                tracking.setUser(user);
+                tracking.setFood(food);
+                tracking.setPortion(portion);
+                tracking.setQuantity(request.getQuantity());
+                tracking.setTimestamp(LocalDateTime.now());
 
-        Tracking savedTracking = trackingRepository.save(tracking);
-        dailyUserStatsService.saveDailyStats(userId, LocalDate.now(), getTrackingsByUserId(userId));
-        return trackingMapper.toResponse(savedTracking);
-    }
+                Tracking savedTracking = trackingRepository.save(tracking);
+                dailyUserStatsService.saveDailyStats(userId, LocalDate.now());
+                return trackingMapper.toResponse(savedTracking);
+        }
 
-    @Transactional(readOnly = true)
-    public List<Tracking> getTrackingsByUserId(Long userId) {
-        return trackingRepository.findByUserId(userId);
-    }
+        @Transactional(readOnly = true)
+        public List<Tracking> getTrackingsByUserId(Long userId) {
+                return trackingRepository.findByUserId(userId);
+        }
 
-    @Transactional
-    public void deleteTracking(Long trackingId) {
-        Tracking tracking = trackingRepository.findById(trackingId)
-                .orElseThrow(() -> new ResourceNotFoundException("Tracking entry not found with id: " + trackingId));
-        trackingRepository.delete(tracking);
-        dailyUserStatsService.saveDailyStats(tracking.getUser().getId(), LocalDate.now(),
-                getTrackingsByUserId(tracking.getUser().getId()));
-    }
+        @Transactional
+        public void deleteTracking(Long trackingId) {
+                Tracking tracking = trackingRepository.findById(trackingId)
+                                .orElseThrow(() -> new ResourceNotFoundException("Tracking entry not found",
+                                                "Tracking entry not found with id: " + trackingId));
+                trackingRepository.delete(tracking);
+                dailyUserStatsService.saveDailyStats(tracking.getUser().getId(), tracking.getTimestamp().toLocalDate());
+        }
 
-    @Transactional
-    public TrackingResponse updateTracking(Long trackingId, TrackingUpdateRequest request) {
-        Tracking tracking = trackingRepository.findById(trackingId)
-                .orElseThrow(() -> new ResourceNotFoundException("Tracking entry not found with id: " + trackingId));
+        @Transactional
+        public TrackingResponse updateTracking(Long trackingId, TrackingUpdateRequest request) {
+                Tracking tracking = trackingRepository.findById(trackingId)
+                                .orElseThrow(() -> new ResourceNotFoundException("Tracking entry not found",
+                                                "Tracking entry not found with id: " + trackingId));
 
-        Portion portion = Optional.ofNullable(request.getPortionId())
-                .map(portionId -> portionRepository.findById(portionId)
-                        .orElseThrow(() -> new ResourceNotFoundException("Portion not found with id: " + portionId)))
-                .orElse(null);
+                Portion portion = Optional.ofNullable(request.getPortionId())
+                                .map(portionId -> portionRepository.findById(portionId)
+                                                .orElseThrow(() -> new ResourceNotFoundException("Portion not found",
+                                                                "Portion not found with id: " + portionId)))
+                                .orElse(null);
 
-        tracking.setPortion(portion);
-        tracking.setQuantity(request.getQuantity());
+                tracking.setPortion(portion);
+                tracking.setQuantity(request.getQuantity());
 
-        Tracking updatedTracking = trackingRepository.save(tracking);
-        dailyUserStatsService.saveDailyStats(tracking.getUser().getId(), LocalDate.now(),
-                getTrackingsByUserId(tracking.getUser().getId()));
-        return trackingMapper.toResponse(updatedTracking);
-    }
+                Tracking updatedTracking = trackingRepository.save(tracking);
+                dailyUserStatsService.saveDailyStats(tracking.getUser().getId(), tracking.getTimestamp().toLocalDate());
+                return trackingMapper.toResponse(updatedTracking);
+        }
 
-    @Transactional(readOnly = true)
-    public DailyTrackingSummary getTrackingsByUserAndDate(Long userId, LocalDate date) {
-        LocalDateTime startOfDay = date.atStartOfDay();
-        LocalDateTime endOfDay = date.atTime(LocalTime.MAX);
+        @Transactional(readOnly = true)
+        public DailyTrackingSummary getTrackingsByUserAndDate(Long userId, LocalDate date) {
+                LocalDateTime startOfDay = date.atStartOfDay();
+                LocalDateTime endOfDay = date.atTime(LocalTime.MAX);
 
-        List<Tracking> trackings = trackingRepository.findByUserIdAndTimestampBetween(userId, startOfDay, endOfDay);
-        List<TrackingResponse> trackingResponses = trackings.stream()
-                .map(trackingMapper::toResponse)
-                .collect(Collectors.toList());
+                List<Tracking> trackings = trackingRepository.findByUserIdAndTimestampBetween(userId, startOfDay,
+                                endOfDay);
+                List<TrackingResponse> trackingResponses = trackings.stream()
+                                .map(trackingMapper::toResponse)
+                                .collect(Collectors.toList());
 
-        DailyTrackingSummary summary = new DailyTrackingSummary();
-        summary.setTrackings(trackingResponses);
+                DailyTrackingSummary summary = new DailyTrackingSummary();
+                summary.setTrackings(trackingResponses);
 
-        summary.setSummary(calculateDailySummary(trackings));
-        return summary;
-    }
+                // Fetch the summary from the stats table
+                DailyTrackingSummary.DailySummary dailySummary = dailyUserStatsService.getDailySummary(userId, date);
+                summary.setSummary(dailySummary);
 
-    private DailyTrackingSummary.DailySummary calculateDailySummary(List<Tracking> trackings) {
-        return dailyUserStatsService.calculateDailySummary(trackings);
-    }
+                return summary;
+        }
 }

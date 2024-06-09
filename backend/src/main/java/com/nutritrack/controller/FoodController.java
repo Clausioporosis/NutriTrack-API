@@ -20,7 +20,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/foods")
 @Tag(name = "Food Management", description = "APIs for managing food")
-
 public class FoodController {
 
     @Autowired

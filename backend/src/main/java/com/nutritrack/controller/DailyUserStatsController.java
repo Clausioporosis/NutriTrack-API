@@ -6,6 +6,8 @@ import com.nutritrack.util.SecurityUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,6 +16,7 @@ import java.time.LocalDate;
 
 @RestController
 @RequestMapping("/api/stats")
+@Tag(name = "Stats Management", description = "APIs for managing stats")
 public class DailyUserStatsController {
 
     @Autowired
@@ -27,7 +30,7 @@ public class DailyUserStatsController {
             @ApiResponse(responseCode = "200", description = "Daily summary retrieved successfully"),
             @ApiResponse(responseCode = "404", description = "Stats not found")
     })
-    @GetMapping("/daily")
+    @GetMapping("/user/date")
     public ResponseEntity<DailyTrackingSummary.DailySummary> getDailySummary(@RequestParam LocalDate date) {
         Long userId = securityUtil.getUserIdFromToken();
         DailyTrackingSummary.DailySummary dailySummary = dailyUserStatsService.getDailySummary(userId, date);
