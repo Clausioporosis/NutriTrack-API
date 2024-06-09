@@ -1,29 +1,20 @@
 package com.nutritrack.repository;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
-
-import com.nutritrack.model.User;
 import com.nutritrack.model.UserStats;
-import com.nutritrack.model.UserStatsId;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
-import java.util.List;
-import java.util.Date;
+
+import java.time.LocalDate;
 import java.util.Optional;
-import org.springframework.transaction.annotation.Transactional;
+import java.util.List;
 
 @Repository
-public interface UserStatsRepository extends JpaRepository<UserStats, UserStatsId> {
+public interface UserStatsRepository extends JpaRepository<UserStats, Long> {
     List<UserStats> findByUserId(Long userId);
 
-    Optional<UserStats> findById(UserStatsId id);
+    Optional<UserStats> findByUserIdAndDate(Long userId, LocalDate date);
 
-    List<UserStats> findByUserIdAndDateBetween(Long userId, Date startDate, Date endDate);
-
-    @Modifying
-    @Transactional
-    @Query("DELETE FROM UserStats us WHERE us.userId = :userId")
-    void deleteByUserId(Long userId);
+    @Query("SELECT SUM(us.totalCalories), SUM(us.totalProtein), SUM(us.totalCarbs), SUM(us.totalFat), SUM(us.dailyCo2Emissions), SUM(us.dailyVeganMeals), SUM(us.dailyVegetarianMeals), SUM(us.dailyPoints) FROM UserStats us WHERE us.user.id = :userId")
+    List<Object[]> findTotalStatsByUserId(Long userId);
 }

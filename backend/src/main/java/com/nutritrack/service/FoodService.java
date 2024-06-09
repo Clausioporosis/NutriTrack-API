@@ -1,150 +1,139 @@
 package com.nutritrack.service;
 
+import com.nutritrack.dto.FoodCreateRequest;
+import com.nutritrack.dto.FoodResponse;
+import com.nutritrack.dto.FoodUpdateRequest;
+import com.nutritrack.dto.SimpleFoodResponse;
+import com.nutritrack.exception.ResourceNotFoundException;
+import com.nutritrack.model.*;
+import com.nutritrack.repository.FoodRepository;
+import com.nutritrack.repository.PortionRepository;
+import com.nutritrack.repository.TrackingRepository;
+import com.nutritrack.repository.UserRepository;
+import com.nutritrack.mapper.FoodMapper;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.nutritrack.model.DailyIntake;
-import com.nutritrack.model.Food;
-import com.nutritrack.model.Nutrition;
-import com.nutritrack.model.Sustainability;
-import com.nutritrack.model.Portion;
-import com.nutritrack.repository.FoodRepository;
-import com.nutritrack.repository.NutritionRepository;
-import com.nutritrack.repository.SustainabilityRepository;
-import com.nutritrack.repository.PortionRepository;
-import com.nutritrack.dto.FullFoodRequest;
-import com.nutritrack.dto.FullFoodResponse;
-import com.nutritrack.dto.PortionRequest;
-import com.nutritrack.model.User;
-import com.nutritrack.repository.UserRepository;
-import com.nutritrack.util.FoodMapper;
-import com.nutritrack.util.SecurityUtil;
-import com.nutritrack.repository.DailyIntakeRepository;
-
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class FoodService {
 
-    @Autowired
-    private FoodRepository foodRepository;
+        @Autowired
+        private FoodRepository foodRepository;
 
-    @Autowired
-    private NutritionRepository nutritionRepository;
+        @Autowired
+        private PortionRepository portionRepository;
 
-    @Autowired
-    private SustainabilityRepository sustainabilityRepository;
+        @Autowired
+        private UserRepository userRepository;
 
-    @Autowired
-    private UserRepository userRepository;
+        @Autowired
+        private FoodMapper foodMapper;
 
-    @Autowired
-    private PortionRepository portionRepository;
+        @Autowired
+        private TrackingRepository trackingRepository;
 
-    @Autowired
-    private DailyIntakeRepository dailyIntakeRepository;
-
-    @Transactional
-    public Food createFood(FullFoodRequest dto) {
-        Long userId = SecurityUtil.getUserIdFromToken();
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
-        Food food = new Food();
-        food.setTitle(dto.getTitle());
-        food.setBrand(dto.getBrand());
-        food.setCategory(dto.getCategory());
-        food.setUser(user);
-        food = foodRepository.save(food);
-
-        Nutrition nutrition = new Nutrition();
-        nutrition.setFood(food);
-        nutrition.setIsLiquid(dto.getIsLiquid());
-        nutrition.setCalories(dto.getCalories());
-        nutrition.setProtein(dto.getProtein());
-        nutrition.setCarbohydrates(dto.getCarbohydrates());
-        nutrition.setFat(dto.getFat());
-        nutritionRepository.save(nutrition);
-
-        Sustainability sustainability = new Sustainability();
-        sustainability.setFood(food);
-        sustainability.setCo2Footprint(dto.getCo2Footprint());
-        sustainability.setVeganOrVegetarian(dto.getVeganOrVegetarian());
-        sustainabilityRepository.save(sustainability);
-
-        if (dto.getPortions() != null) {
-            for (PortionRequest portionRequest : dto.getPortions()) {
-                Portion portion = new Portion();
-                portion.setFood(food);
-                portion.setPortionLabel(portionRequest.getPortionLabel());
-                portion.setAmountPerPortion(portionRequest.getAmountPerPortion());
-                portionRepository.save(portion);
-            }
+        public List<FoodResponse> getFoodsByUserId(Long userId) {
+                return foodRepository.findByUserId(userId).stream()
+                                .map(foodMapper::toResponse)
+                                .collect(Collectors.toList());
         }
 
-        return food;
-    }
+        @Transactional
+        public FoodResponse createFood(Long userId, FoodCreateRequest foodCreateRequest) {
+                User user = userRepository.findById(userId)
+                                .orElseThrow(() -> new RuntimeException("User not found"));
 
-    @Transactional
-    public Food updateFood(Long foodId, Long userId, FullFoodRequest dto) {
-        Food food = foodRepository.findByIdAndUserId(foodId, userId)
-                .orElseThrow(() -> new RuntimeException("Food not found or does not belong to the user"));
-
-        food.setTitle(dto.getTitle());
-        food.setBrand(dto.getBrand());
-        food.setCategory(dto.getCategory());
-        food = foodRepository.save(food);
-
-        Nutrition nutrition = nutritionRepository.findByFoodId(foodId);
-        nutrition.setIsLiquid(dto.getIsLiquid());
-        nutrition.setCalories(dto.getCalories());
-        nutrition.setProtein(dto.getProtein());
-        nutrition.setCarbohydrates(dto.getCarbohydrates());
-        nutrition.setFat(dto.getFat());
-        nutritionRepository.save(nutrition);
-
-        Sustainability sustainability = sustainabilityRepository.findByFoodId(foodId);
-        sustainability.setCo2Footprint(dto.getCo2Footprint());
-        sustainability.setVeganOrVegetarian(dto.getVeganOrVegetarian());
-        sustainabilityRepository.save(sustainability);
-
-        List<Portion> existingPortions = portionRepository.findByFoodId(foodId);
-        portionRepository.deleteAll(existingPortions);
-
-        if (dto.getPortions() != null) {
-            for (PortionRequest portionRequest : dto.getPortions()) {
-                Portion portion = new Portion();
-                portion.setFood(food);
-                portion.setPortionLabel(portionRequest.getPortionLabel());
-                portion.setAmountPerPortion(portionRequest.getAmountPerPortion());
-                portionRepository.save(portion);
-            }
+                Food food = foodMapper.toEntity(foodCreateRequest, user);
+                Food savedFood = foodRepository.save(food);
+                return foodMapper.toResponse(savedFood);
         }
 
-        return food;
-    }
+        @Transactional
+        public void deactivateFoodById(Long foodId) {
+                Food food = foodRepository.findById(foodId)
+                                .orElseThrow(() -> new ResourceNotFoundException("Food not found with id: " + foodId));
+                food.setDeactivated(true); // Set deactivated flag instead of deleting
+                foodRepository.save(food);
+        }
 
-    @Transactional(readOnly = true)
-    public FullFoodResponse getFoodById(Long foodId, Long userId) {
-        Food food = foodRepository.findByIdAndUserId(foodId, userId)
-                .orElseThrow(() -> new RuntimeException("Food not found or does not belong to the user"));
+        @Transactional
+        public void deleteFoodById(Long foodId) {
+                Food food = foodRepository.findById(foodId)
+                                .orElseThrow(() -> new ResourceNotFoundException("Food not found with id: " + foodId));
 
-        Nutrition nutrition = nutritionRepository.findByFoodId(food.getId());
-        Sustainability sustainability = sustainabilityRepository.findByFoodId(food.getId());
-        List<Portion> portions = portionRepository.findByFoodId(food.getId());
+                List<Tracking> trackings = trackingRepository.findByFoodId(foodId);
+                for (Tracking tracking : trackings) {
+                        tracking.setFood(null);
+                        tracking.setPortion(null);
+                }
+                trackingRepository.saveAll(trackings);
 
-        return FoodMapper.toFullFoodResponse(food, nutrition, sustainability, portions);
-    }
+                foodRepository.delete(food);
+        }
 
-    @Transactional
-    public void deleteFood(Long foodId, Long userId) {
-        Food food = foodRepository.findByIdAndUserId(foodId, userId)
-                .orElseThrow(() -> new RuntimeException("Food not found or does not belong to the user"));
+        public FoodResponse getFoodById(Long foodId) {
+                Food food = foodRepository.findById(foodId)
+                                .orElseThrow(() -> new ResourceNotFoundException("Food not found with id: " + foodId));
+                return foodMapper.toResponse(food);
+        }
 
-        nutritionRepository.deleteByFoodId(food.getId());
-        sustainabilityRepository.deleteByFoodId(food.getId());
-        portionRepository.deleteByFoodId(food.getId());
-        foodRepository.delete(food);
-    }
+        public List<SimpleFoodResponse> getSimpleFoodsByUserId(Long userId) {
+                List<Food> foods = foodRepository.findByUserIdAndDeactivatedFalse(userId);
+                return foods.stream()
+                                .map(food -> new SimpleFoodResponse(food.getId(), food.getTitle(), food.getBrand(),
+                                                food.getCategory()))
+                                .collect(Collectors.toList());
+        }
+
+        public List<SimpleFoodResponse> searchFoodsByTitle(Long userId, String title) {
+                List<Food> foods = foodRepository.findByUserIdAndTitleContainingAndDeactivatedFalse(userId, title);
+                return foods.stream()
+                                .map(food -> new SimpleFoodResponse(food.getId(), food.getTitle(), food.getBrand(),
+                                                food.getCategory()))
+                                .collect(Collectors.toList());
+        }
+
+        @Transactional
+        public FoodResponse updateFood(Long foodId, FoodUpdateRequest foodUpdateRequest, Long userId) {
+                Food existingFood = foodRepository.findById(foodId)
+                                .orElseThrow(() -> new ResourceNotFoundException("Food not found with id: " + foodId));
+
+                User user = userRepository.findById(userId)
+                                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
+
+                // Update the basic fields and nutrition, sustainability information
+                Food updatedFood = foodMapper.toEntity(foodUpdateRequest, user, existingFood);
+
+                // Remove portions not in the request
+                List<Long> portionIdsInRequest = foodUpdateRequest.getPortions().stream()
+                                .filter(portionRequest -> portionRequest.getId() != null)
+                                .map(FoodUpdateRequest.PortionUpdateRequest::getId)
+                                .collect(Collectors.toList());
+
+                List<Portion> portionsToRemove = existingFood.getPortions().stream()
+                                .filter(portion -> portion.getId() != null
+                                                && !portionIdsInRequest.contains(portion.getId()))
+                                .collect(Collectors.toList());
+
+                // Update tracking entries before deleting portions
+                for (Portion portion : portionsToRemove) {
+                        List<Tracking> trackings = trackingRepository.findByPortionId(portion.getId());
+                        for (Tracking tracking : trackings) {
+                                tracking.setPortion(null);
+                                tracking.setQuantity(tracking.getQuantity() * portion.getQuantity());
+                        }
+                        trackingRepository.saveAll(trackings);
+                }
+
+                existingFood.getPortions().removeAll(portionsToRemove);
+                portionsToRemove.forEach(portionRepository::delete);
+
+                Food savedFood = foodRepository.save(updatedFood);
+                return foodMapper.toResponse(savedFood);
+        }
 }

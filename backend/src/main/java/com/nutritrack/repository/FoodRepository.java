@@ -1,19 +1,17 @@
 package com.nutritrack.repository;
 
 import com.nutritrack.model.Food;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import java.util.List;
-import java.util.Optional;
-
-import org.springframework.data.jpa.repository.JpaRepository;
 
 @Repository
 public interface FoodRepository extends JpaRepository<Food, Long> {
     List<Food> findByUserId(Long userId);
 
-    List<Food> findByCategory(String category);
+    List<Food> findByUserIdAndTitleContaining(Long userId, String title);
 
-    List<Food> findByUserIdAndTitleContainingIgnoreCase(Long userId, String title);
+    List<Food> findByUserIdAndDeactivatedFalse(Long userId);
 
-    Optional<Food> findByIdAndUserId(Long foodId, Long userId);
+    List<Food> findByUserIdAndTitleContainingAndDeactivatedFalse(Long userId, String title);
 }

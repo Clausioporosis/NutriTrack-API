@@ -1,26 +1,22 @@
 package com.nutritrack.model;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-
 import jakarta.persistence.*;
+import lombok.Data;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 @Data
 @Entity
-@Table(name = "Portion")
+@Table(name = "portion")
 public class Portion {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long portionId;
+    private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "foodId", nullable = false)
+    private String label;
+    private float quantity;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "food_id")
+    @JsonBackReference
     private Food food;
-
-    @Column(length = 50)
-    private String portionLabel;
-
-    private Double amountPerPortion;
 }

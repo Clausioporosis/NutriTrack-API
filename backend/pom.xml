@@ -62,6 +62,13 @@
             <version>6.5.2.Final</version>
         </dependency>
 
+        <!-- Correct Jackson Datatype for Hibernate 6 -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-hibernate6</artifactId>
+            <version>2.17.1</version>
+        </dependency>
+
 		<!-- Springdoc OpenAPI UI for API documentation -->
         <dependency>
             <groupId>org.springdoc</groupId>
@@ -114,6 +121,12 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
+		</dependency>
+
+	
+		<dependency>
+ 		   <groupId>com.fasterxml.jackson.datatype</groupId>
+  		  <artifactId>jackson-datatype-jsr310</artifactId>
 		</dependency>
 	</dependencies>
 
