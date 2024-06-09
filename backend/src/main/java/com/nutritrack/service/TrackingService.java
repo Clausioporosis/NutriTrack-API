@@ -5,7 +5,6 @@ import com.nutritrack.dto.TrackingCreateRequest;
 import com.nutritrack.dto.TrackingResponse;
 import com.nutritrack.dto.TrackingUpdateRequest;
 import com.nutritrack.mapper.TrackingMapper;
-import com.nutritrack.model.DietType;
 import com.nutritrack.model.Food;
 import com.nutritrack.model.Portion;
 import com.nutritrack.model.Tracking;

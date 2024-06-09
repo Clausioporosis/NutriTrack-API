@@ -20,15 +20,11 @@ import java.util.List;
 @Tag(name = "User Management", description = "APIs for managing users")
 public class UserController {
 
-    private final UserService userService;
-
-    private final SecurityUtil securityUtil;
+    @Autowired
+    private UserService userService;
 
     @Autowired
-    public UserController(UserService userService, SecurityUtil securityUtil) {
-        this.userService = userService;
-        this.securityUtil = securityUtil;
-    }
+    private SecurityUtil securityUtil;
 
     @Operation(summary = "Get current user details")
     @GetMapping("/me")

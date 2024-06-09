@@ -9,14 +9,24 @@ import java.time.LocalDateTime;
 @Schema(description = "Response DTO for tracking entry")
 public class TrackingResponse {
     private Long id;
-    private Long foodId;
-    private String foodTitle;
-    private String foodBrand;
-    private String foodCategory;
-    private boolean IsLiquid;
-    private Long portionId;
-    private String portionLabel;
-    private float portionQuantity;
+    private FoodResponse food;
+    private PortionResponse portion;
     private float quantity;
     private LocalDateTime timestamp;
+
+    @Data
+    public static class FoodResponse {
+        private Long id;
+        private String title;
+        private String brand;
+        private String category;
+        private boolean IsLiquid;
+    }
+
+    @Data
+    public static class PortionResponse {
+        private Long id;
+        private String label;
+        private float quantity;
+    }
 }

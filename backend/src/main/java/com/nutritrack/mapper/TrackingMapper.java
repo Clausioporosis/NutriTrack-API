@@ -14,27 +14,35 @@ public class TrackingMapper {
         response.setTimestamp(tracking.getTimestamp());
 
         if (tracking.getFood() != null) {
-            response.setFoodId(tracking.getFood().getId());
-            response.setFoodTitle(tracking.getFood().getTitle());
-            response.setFoodBrand(tracking.getFood().getBrand());
-            response.setFoodCategory(tracking.getFood().getCategory());
-            response.setIsLiquid(tracking.getFood().isLiquid());
+            TrackingResponse.FoodResponse foodResponse = new TrackingResponse.FoodResponse();
+            foodResponse.setId(tracking.getFood().getId());
+            foodResponse.setTitle(tracking.getFood().getTitle());
+            foodResponse.setBrand(tracking.getFood().getBrand());
+            foodResponse.setCategory(tracking.getFood().getCategory());
+            foodResponse.setIsLiquid(tracking.getFood().isLiquid());
+            response.setFood(foodResponse);
         } else {
-            response.setFoodId(null);
-            response.setFoodTitle("Unavailable");
-            response.setFoodBrand("Unavailable");
-            response.setFoodCategory("Unavailable");
-            response.setIsLiquid(false);
+            TrackingResponse.FoodResponse foodResponse = new TrackingResponse.FoodResponse();
+            foodResponse.setId(null);
+            foodResponse.setTitle("Unavailable");
+            foodResponse.setBrand("Unavailable");
+            foodResponse.setCategory("Unavailable");
+            foodResponse.setIsLiquid(false);
+            response.setFood(foodResponse);
         }
 
         if (tracking.getPortion() != null) {
-            response.setPortionId(tracking.getPortion().getId());
-            response.setPortionLabel(tracking.getPortion().getLabel());
-            response.setPortionQuantity(tracking.getPortion().getQuantity());
+            TrackingResponse.PortionResponse portionResponse = new TrackingResponse.PortionResponse();
+            portionResponse.setId(tracking.getPortion().getId());
+            portionResponse.setLabel(tracking.getPortion().getLabel());
+            portionResponse.setQuantity(tracking.getPortion().getQuantity());
+            response.setPortion(portionResponse);
         } else {
-            response.setPortionId(null);
-            response.setPortionLabel(null);
-            response.setPortionQuantity(0);
+            TrackingResponse.PortionResponse portionResponse = new TrackingResponse.PortionResponse();
+            portionResponse.setId(null);
+            portionResponse.setLabel(null);
+            portionResponse.setQuantity(0);
+            response.setPortion(portionResponse);
         }
 
         return response;

@@ -6,7 +6,9 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
+
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 
 import com.nutritrack.filter.JwtRequestFilter;
 
@@ -14,10 +16,7 @@ import static org.springframework.security.config.Customizer.withDefaults;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
@@ -35,11 +34,8 @@ public class SecurityConfig {
         @Autowired
         private JwtRequestFilter jwtRequestFilter;
 
-        @Autowired
-        private UserDetailsService userDetailsService;
-
-        @Autowired
-        private PasswordEncoder passwordEncoder;
+        @Value("${jwt.secret}")
+        private String jwtSecret;
 
         @Bean
         public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -54,8 +50,9 @@ public class SecurityConfig {
                                                 .permitAll()
                                                 .anyRequest().authenticated())
                                 .oauth2ResourceServer(oauth2 -> oauth2
-                                                .jwt()
-                                                .jwtAuthenticationConverter(jwtAuthConverter))
+                                                .jwt(jwt -> jwt
+                                                                .decoder(jwtDecoder())
+                                                                .jwtAuthenticationConverter(jwtAuthConverter)))
                                 .sessionManagement(management -> management
                                                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                                 .cors(withDefaults());
@@ -65,25 +62,14 @@ public class SecurityConfig {
                 return http.build();
         }
 
-        @Autowired
-        public void configure(AuthenticationManagerBuilder auth) throws Exception {
-                auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder);
-        }
-
         @Bean
-        public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
-                return http.getSharedObject(AuthenticationManagerBuilder.class)
-                                .userDetailsService(userDetailsService)
-                                .passwordEncoder(passwordEncoder)
-                                .and()
-                                .build();
+        public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration)
+                        throws Exception {
+                return authenticationConfiguration.getAuthenticationManager();
         }
 
         @Bean
         public JwtDecoder jwtDecoder() {
                 return NimbusJwtDecoder.withSecretKey(new SecretKeySpec(jwtSecret.getBytes(), "HMACSHA256")).build();
         }
-
-        @Value("${jwt.secret}")
-        private String jwtSecret;
 }
