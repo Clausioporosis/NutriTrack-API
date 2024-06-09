@@ -2,9 +2,10 @@
 
 ## Table of Contents
 1. [Project Overview](#project-overview)
-2. [Environment Setup](#environment-setup)
-3. [Technologies Used](#technologies-used)
-4. [API Documentation](#api-documentation)
+2. [Technologies Used](#technologies-used)
+3. [Environment Setup](#environment-setup)
+4. [Security](#security)
+5. [API Documentation](#api-documentation)
     - [Authentication API](#authentication-api)
     - [User API](#user-api)
     - [Food API](#food-api)
@@ -16,10 +17,74 @@
 ## Project Overview
 **NutriTrack** is an upcoming app designed to help users track their food consumption, nutritional information and environmental impact.
 
-## Environment Setup
-
 ## Technologies Used
 
+NutriTrack leverages the following key technologies:
+
+- **Java 17:** Programming language used for backend development.
+- **Spring Boot:** Framework for building and running the application.
+  - **Spring Data JPA:** For database interactions.
+  - **Spring Security:** For authentication and authorization.
+  - **Springdoc OpenAPI:** For API documentation with Swagger UI.
+- **PostgreSQL:** Relational database system for data storage.
+- **Docker:** Containerization for consistent deployment.
+- **Docker Compose:** Managing multi-container Docker applications.
+- **pgAdmin:** Database management tool for PostgreSQL.
+- **JWT (JSON Web Tokens):** Secure authentication mechanism.
+- **Maven:** Build automation and dependency management.
+
+## Environment Setup
+
+### Prerequisites
+
+Before setting up the project, ensure you have the following software installed on your machine:
+
+- [Java Development Kit (JDK) 17](https://www.oracle.com/java/technologies/javase/jdk17-archive-downloads.html)
+- [Apache Maven](https://maven.apache.org/install.html)
+- [Docker](https://docs.docker.com/get-docker/)
+- [Docker Compose](https://docs.docker.com/compose/install/)
+
+### Cloning the Repository
+
+Clone the project repository from GitHub:
+
+```sh
+    git clone https://github.com/clausioporosis/nutritrack.git
+    cd nutritrack
+```
+
+### Docker Setup
+
+The project includes a docker-compose.yml file to set up the PostgreSQL database, pgAdmin, and run the application. Ensure you are in the project's root directory and use the following command to start the services:
+
+#### Running the Application 
+
+```sh
+    docker-compose up -d
+```
+
+The application will be accessible at http://localhost:8080.
+
+#### Stopping the Services
+
+```sh
+    docker-compose down
+```
+
+### Additional Notes
+
+## Technologies Used
+- **Database Management:** pgAdmin is included in the docker-compose.yml file for easier database management. Access it at http://localhost:5050 with the default credentials provided (email: admin@admin.com password: admin).
+- **API Documentation:** The project uses SpringDoc and Swagger UI for API documentation. Once the application is running, you can access the API documentation at http://localhost:8080/swagger-ui.html.
+- **Security:** The project uses JWT for authentication and Spring Security for securing endpoints. Ensure to configure your JWT_SECRET in the application.yml.
+
+## Security
+
+**NutriTrack** implements various security measures to protect user data and ensure secure access to the API.
+
+### Authentication
+
+The application uses JSON Web Tokens (JWT) for authentication. Upon successful login, a token is issued to the user, which must be included in the header of subsequent requests.
 
 ## API Documentation
 
