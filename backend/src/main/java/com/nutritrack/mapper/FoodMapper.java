@@ -22,7 +22,7 @@ public class FoodMapper {
         food.setTitle(foodCreateRequest.getTitle());
         food.setBrand(foodCreateRequest.getBrand());
         food.setCategory(foodCreateRequest.getCategory());
-        food.setLiquid(foodCreateRequest.isLiquid()); // Set the isLiquid field
+        food.setLiquid(foodCreateRequest.isLiquid());
 
         // Create and set nutrition and sustainability information
         food.setNutrition(toNutrition(foodCreateRequest.getNutrition(), food));
@@ -49,7 +49,7 @@ public class FoodMapper {
         existingFood.setTitle(foodUpdateRequest.getTitle());
         existingFood.setBrand(foodUpdateRequest.getBrand());
         existingFood.setCategory(foodUpdateRequest.getCategory());
-        existingFood.setLiquid(foodUpdateRequest.isLiquid()); // Set the isLiquid field
+        existingFood.setLiquid(foodUpdateRequest.isLiquid());
 
         // Update nutrition and sustainability information
         existingFood.setNutrition(toNutrition(foodUpdateRequest.getNutrition(), existingFood));
@@ -93,7 +93,7 @@ public class FoodMapper {
         foodResponse.setBrand(food.getBrand());
         foodResponse.setCategory(food.getCategory());
         foodResponse.setDeactivated(food.isDeactivated());
-        foodResponse.setLiquid(food.isLiquid()); // Set the isLiquid field
+        foodResponse.setLiquid(food.isLiquid());
 
         // Map nutrition and sustainability information
         foodResponse.setNutrition(toNutritionResponse(food.getNutrition()));
