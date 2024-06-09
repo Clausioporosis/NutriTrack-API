@@ -84,6 +84,10 @@ The application will be accessible at http://localhost:8080.
 
 The application uses JSON Web Tokens (JWT) for authentication. Upon successful login, a token is issued to the user, which must be included in the header of subsequent requests.
 
+### Extracting User ID from JWT Token 
+
+For user-related operations, the user ID is securely extracted from the JWT token provided in the request header. This process ensures that each request is authenticated, and the user ID is reliably obtained from the token payload. The extracted user ID is then used to perform operations specific to the authenticated user across various APIs, including the Food API, Tracking API, and User Stats API. This mechanism guarantees that all data and actions are accurately associated with the correct user.
+
 ## API Documentation
 
 ### Authentication API
