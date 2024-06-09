@@ -73,7 +73,6 @@ The application will be accessible at http://localhost:8080.
 
 ### Additional Notes
 
-## Technologies Used
 - **Database Management:** pgAdmin is included in the docker-compose.yml file for easier database management. Access it at http://localhost:5050 with the default credentials provided (email: admin@admin.com password: admin).
 - **API Documentation:** The project uses SpringDoc and Swagger UI for API documentation. Once the application is running, you can access the API documentation at http://localhost:8080/swagger-ui.html.
 - **Security:** The project uses JWT for authentication and Spring Security for securing endpoints. Ensure to configure your JWT_SECRET in the application.yml.
