@@ -64,6 +64,9 @@ public class DailyUserStatsService {
             Food food = tracking.getFood();
 
             float portionQuantity;
+            // if portion is defined, calculate the weight based on the portion quantity and
+            // the quantity of the tracking entry
+            // if portion is not defined, the quantity of the tracking entry is the weight
             if (tracking.getPortion() != null) {
                 portionQuantity = tracking.getPortion().getQuantity() * tracking.getQuantity();
             } else {
@@ -72,7 +75,7 @@ public class DailyUserStatsService {
 
             float portionMultiplier = portionQuantity / 100;
 
-            // Berechnungen der Nährwerte und CO2-Emissionen basierend auf der Gesamtmenge
+            // calculation of makros and co2 emissions for the weight of the portion
             dailySummary.setTotalCalories(
                     dailySummary.getTotalCalories() + (food.getNutrition().getCalories() * portionMultiplier));
             dailySummary.setTotalProtein(
@@ -84,7 +87,8 @@ public class DailyUserStatsService {
             float totalCo2ForEntry = food.getSustainability().getCo2perKg() * portionQuantity / 1000;
             dailySummary.setTotalCo2(dailySummary.getTotalCo2() + totalCo2ForEntry);
 
-            // Punkteverteilung basierend auf Ernährungstyp
+            // calculation of points based on diet type
+            // vegan: 15 points | vegetarian: 8 points | other: 2 points
             if (food.getSustainability().getDietType() == DietType.VEGAN) {
                 dailySummary.setTotalVeganMeals(dailySummary.getTotalVeganMeals() + 1);
                 dailySummary.setDailyPoints(dailySummary.getDailyPoints() + 15);
@@ -95,7 +99,8 @@ public class DailyUserStatsService {
                 dailySummary.setDailyPoints(dailySummary.getDailyPoints() + 2);
             }
 
-            // Punkteverteilung basierend auf CO2-Emissionen
+            // calculation of points based on co2 emissions per quantity of the food
+            // < 0.1: 10 points | < 0.2: 5 points | < 0.3: 2 points
             if (totalCo2ForEntry < 0.1) {
                 dailySummary.setDailyPoints(dailySummary.getDailyPoints() + 10);
             } else if (totalCo2ForEntry < 0.2) {
@@ -104,7 +109,8 @@ public class DailyUserStatsService {
                 dailySummary.setDailyPoints(dailySummary.getDailyPoints() + 2);
             }
 
-            // Punkteverteilung basierend auf Kaloriengehalt
+            // calculation of points based on calories per quantity of the food
+            // < 100: 5 points | < 200: 3 points | < 300: 1 point
             if (food.getNutrition().getCalories() < 100) {
                 dailySummary.setDailyPoints(dailySummary.getDailyPoints() + 5);
             } else if (food.getNutrition().getCalories() < 200) {
