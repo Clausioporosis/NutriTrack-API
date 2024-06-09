@@ -91,30 +91,28 @@ To set up the development environment for NutriTrack, follow these steps:
 **Endpoint: `/api/users`**
 - **Method:** `GET`
 - **Description:** Get all users.
-- **Response Body:** [Response Body](#response-body)
+- **[Response Body:](#user-response-body)**
 
 **Endpoint: `/api/users/{id}`**
 - **Method:** `GET`
 - **Description:** Get user by ID.
-- **Response Body:** [Response Body](#response-body)
+- **[Response Body:](#user-response-body)**
+
+**Endpoint: `/api/users/search?keyword={keyword}`**
+- **Method:** `GET`
+- **Description:** Search users by keyword.
+- **[Response Body:](#user-response-body)**
+
+**Endpoint: `/api/users/me`**
+- **Method:** `GET`
+- **Description:** Get the current user.
+- **[Response Body:](#user-response-body)**
 
 **Endpoint: `/api/users/{id}`**
 - **Method:** `DELETE`
 - **Description:** Delete user by ID.
 
-**Endpoint: `/api/users/search?keyword={keyword}`**
-- **Method:** `GET`
-- **Description:** Search users by keyword.
-- **Response Body:** [Response Body](#response-body)
-
-**Endpoint: `/api/users/me`**
-- **Method:** `GET`
-- **Description:** Get the current user.
-- **Response Body:**
-
-    [Response Body](#response-body)
-
-### Response Body
+### User Response Body
 ```json
 {
      "id": 0,
@@ -123,7 +121,7 @@ To set up the development environment for NutriTrack, follow these steps:
      "firstName": "string",
      "lastName": "string"
 }
-
+```
 
 
 
