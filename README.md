@@ -305,7 +305,7 @@ The application uses JSON Web Tokens (JWT) for authentication. Upon successful l
 - **Response Body:**
 ```json
     {
-        "id": 1,
+        "id": 0,
         "food": {
             "id": 0,
             "title": "string",
@@ -340,16 +340,16 @@ The application uses JSON Web Tokens (JWT) for authentication. Upon successful l
 - **Response Body:**
 ```json
     {
-        "id": 1,
+        "id": 0,
         "food": {
-            "id": 1,
+            "id": 0,
             "title": "string",
             "brand": "string",
             "category": "string",
             "isLiquid": false
         },
         "portion": {
-            "id": 1,
+            "id": 0,
             "label": "string",
             "quantity": 0.0
         },
@@ -366,16 +366,16 @@ The application uses JSON Web Tokens (JWT) for authentication. Upon successful l
     {
        "trackings": [
            {
-              "id": 1,
+              "id": 0,
               "food": {
-                   "id": 1,
+                   "id": 0,
                    "title": "string",
                    "brand": "string",
                    "category": "string",
                    "isLiquid": false
                },
                "portion": {
-                    "id": 1,
+                    "id": 0,
                     "label": "string",
                     "quantity": 0.0
                 },
