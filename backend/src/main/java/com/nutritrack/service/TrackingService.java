@@ -45,7 +45,7 @@ public class TrackingService {
         private TrackingMapper trackingMapper;
 
         @Autowired
-        private DailyUserStatsService dailyUserStatsService;
+        private UserStatsService dailyUserStatsService;
 
         @Transactional
         public TrackingResponse createTracking(Long userId, TrackingCreateRequest request) {

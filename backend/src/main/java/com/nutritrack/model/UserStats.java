@@ -10,7 +10,7 @@ import java.time.LocalDate;
 @Entity
 @Table(name = "daily_user_stats")
 @Schema(description = "Daily statistics for a user, including CO2 emissions and dietary habits")
-public class DailyUserStats {
+public class UserStats {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Schema(description = "Unique identifier of the daily user statistics")

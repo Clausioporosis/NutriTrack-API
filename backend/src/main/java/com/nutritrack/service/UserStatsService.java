@@ -1,11 +1,12 @@
 package com.nutritrack.service;
 
 import com.nutritrack.dto.DailyTrackingSummary;
-import com.nutritrack.model.DailyUserStats;
+import com.nutritrack.dto.TotalTrackingSummary;
+import com.nutritrack.model.UserStats;
 import com.nutritrack.model.DietType;
 import com.nutritrack.model.Food;
 import com.nutritrack.model.Tracking;
-import com.nutritrack.repository.DailyUserStatsRepository;
+import com.nutritrack.repository.UserStatsRepository;
 import com.nutritrack.repository.UserRepository;
 import com.nutritrack.repository.TrackingRepository;
 import com.nutritrack.exception.ResourceNotFoundException;
@@ -19,10 +20,10 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class DailyUserStatsService {
+public class UserStatsService {
 
     @Autowired
-    private DailyUserStatsRepository dailyUserStatsRepository;
+    private UserStatsRepository userStatsRepository;
 
     @Autowired
     private UserRepository userRepository;
@@ -36,8 +37,8 @@ public class DailyUserStatsService {
                 date.atTime(LocalTime.MAX));
         DailyTrackingSummary.DailySummary dailySummary = calculateDailySummary(trackings);
 
-        DailyUserStats stats = dailyUserStatsRepository.findByUserIdAndDate(userId, date)
-                .orElse(new DailyUserStats());
+        UserStats stats = userStatsRepository.findByUserIdAndDate(userId, date)
+                .orElse(new UserStats());
 
         stats.setUser(userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId)));
@@ -51,24 +52,49 @@ public class DailyUserStatsService {
         stats.setDailyVegetarianMeals(dailySummary.getTotalVegetarianMeals());
         stats.setDailyPoints(dailySummary.getDailyPoints());
 
-        dailyUserStatsRepository.save(stats);
+        userStatsRepository.save(stats);
+    }
+
+    @Transactional(readOnly = true)
+    public TotalTrackingSummary getTotalTrackingSummary(Long userId) {
+        List<Object[]> results = userStatsRepository.findTotalStatsByUserId(userId);
+
+        if (results == null || results.isEmpty()) {
+            return new TotalTrackingSummary();
+        }
+
+        Object[] result = results.get(0);
+
+        TotalTrackingSummary totalSummary = new TotalTrackingSummary();
+        totalSummary.setTotalCalories(result[0] != null ? ((Number) result[0]).floatValue() : 0);
+        totalSummary.setTotalProtein(result[1] != null ? ((Number) result[1]).floatValue() : 0);
+        totalSummary.setTotalCarbs(result[2] != null ? ((Number) result[2]).floatValue() : 0);
+        totalSummary.setTotalFat(result[3] != null ? ((Number) result[3]).floatValue() : 0);
+        totalSummary.setTotalCo2(result[4] != null ? ((Number) result[4]).floatValue() : 0);
+        totalSummary.setTotalVeganMeals(result[5] != null ? ((Number) result[5]).intValue() : 0);
+        totalSummary.setTotalVegetarianMeals(result[6] != null ? ((Number) result[6]).intValue() : 0);
+        totalSummary.setTotalPoints(result[7] != null ? ((Number) result[7]).intValue() : 0);
+
+        return totalSummary;
     }
 
     @Transactional(readOnly = true)
     public DailyTrackingSummary.DailySummary getDailySummary(Long userId, LocalDate date) {
-        DailyUserStats stats = dailyUserStatsRepository.findByUserIdAndDate(userId, date)
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        "Stats not found for user id: " + userId + " on date: " + date));
+        Optional<UserStats> optionalStats = userStatsRepository.findByUserIdAndDate(userId, date);
 
         DailyTrackingSummary.DailySummary dailySummary = new DailyTrackingSummary.DailySummary();
-        dailySummary.setTotalCalories(stats.getTotalCalories());
-        dailySummary.setTotalProtein(stats.getTotalProtein());
-        dailySummary.setTotalCarbs(stats.getTotalCarbs());
-        dailySummary.setTotalFat(stats.getTotalFat());
-        dailySummary.setTotalCo2(stats.getDailyCo2Emissions());
-        dailySummary.setTotalVeganMeals(stats.getDailyVeganMeals());
-        dailySummary.setTotalVegetarianMeals(stats.getDailyVegetarianMeals());
-        dailySummary.setDailyPoints(stats.getDailyPoints());
+
+        if (optionalStats.isPresent()) {
+            UserStats stats = optionalStats.get();
+            dailySummary.setTotalCalories(stats.getTotalCalories());
+            dailySummary.setTotalProtein(stats.getTotalProtein());
+            dailySummary.setTotalCarbs(stats.getTotalCarbs());
+            dailySummary.setTotalFat(stats.getTotalFat());
+            dailySummary.setTotalCo2(stats.getDailyCo2Emissions());
+            dailySummary.setTotalVeganMeals(stats.getDailyVeganMeals());
+            dailySummary.setTotalVegetarianMeals(stats.getDailyVegetarianMeals());
+            dailySummary.setDailyPoints(stats.getDailyPoints());
+        }
 
         return dailySummary;
     }
