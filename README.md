@@ -350,12 +350,13 @@
 - **[Response Body:](#stats-response-body)**
 
 #### **Stats Response Body**
+```json
     {
-        "totalCalories": 0,
-        "totalProtein": 0,
-        "totalCarbs": 0,
-        "totalFat": 0,
-        "totalCo2": 0,
+        "totalCalories": 0.0,
+        "totalProtein": 0.0,
+        "totalCarbs": 0.0,
+        "totalFat": 0.0,
+        "totalCo2": 0.0,
         "totalVeganMeals": 0,
         "totalVegetarianMeals": 0,
         "totalPoints": 0
