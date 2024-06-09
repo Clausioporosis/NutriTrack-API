@@ -1,63 +1,310 @@
-# NutriTrack
-#### A Sustainable Nutrition Tracking App
+# NutriTrack Project Documentation
 
-## Getting startet:
-### React Native:
-- Follow this [instructions](https://reactnative.dev/docs/environment-setup?guide=native) for **Installing dependencies & Android Development Environment** 
+## Table of Contents
+1. [Project Overview](#project-overview)
+2. [Environment Setup](#environment-setup)
+3. [Technologies Used](#technologies-used)
+4. [API Documentation](#api-documentation)
+    - [Authentication API](#authentication-api)
+    - [User API](#user-api)
+    - [Food API](#food-api)
+    - [Tracking API](#tracking-api)
+    - [User Stats API](#user-stats-api)
+5. [Entities and DTOs](#entities-and-dtos)
 
-#### Android Studio:
-- start android studio and open the ./frontend/android folder
-- open the Device Manager on the far ride side and run the Pixel 3a API
+---
 
-#### IDE:
-- run `npm install` in ./frontend after cloning
-- run `npm start` and press `d` after the dev server is ready
+## Project Overview
+**NutriTrack** is a web application designed to help users track their food consumption and nutritional information. Users can register, log in, add food items, track their daily food intake, and view their nutritional statistics.
 
-The Device should now display the React Native App
+## Environment Setup
+To set up the development environment for NutriTrack, follow these steps:
 
-### Spring Boot:
-#### Docker:
-- run `docker-compose up` in the main directory
+1. **Clone the Repository:**
+    ```sh
+    git clone <repository_url>
+    cd nutritrack
+    ```
 
-#### Local:
-- run `mvnw spring-boot:start` in ./backend
+2. **Build and Run with Docker:**
+    Ensure you have Docker installed. Use the `docker-compose.yml` file to set up the application:
+    ```sh
+    docker-compose up --build
+    ```
 
-## ToDo:
-- Db setup for docker
-- develop REST-API (Want to make an actually good API? Read the [Zalando RESTful api and events guidelines](https://opensource.zalando.com/restful-api-guidelines/))
-- (Use Insomnia instead of Postman, all my homies hate Postman)
-  
-Let's just focus on making the API work, frontend will follow later
+3. **Build and Run without Docker:**
+    Ensure you have Java and Maven installed. Run the following commands:
+    ```sh
+    mvn clean install
+    mvn spring-boot:run
+    ```
 
-# Global INFO
+## Technologies Used
+- **Spring Boot** for application framework
+- **Spring Security** for authentication and authorization
+- **JWT** for secure token-based authentication
+- **Hibernate** for ORM
+- **PostgreSQL** as the database
+- **Docker** for containerization
+- **Swagger** for API documentation
+- **Lombok** to reduce boilerplate code
 
-## Database model
-[model](https://drawsql.app/teams/swt-2/diagrams/nutrack)
+## API Documentation
 
-## Start all dockers
-docker compose --profile "*" up -d
+### Authentication API
 
-## Stop all dockers
-docker compose --profile "*" down
+**Endpoint: `/api/auth/register`**
+- **Method:** `POST`
+- **Description:** Register a new user.
+- **Request Body:**
+    ```json
+    {
+        "username": "your-username",
+        "password": "your-password"
+    }
+    ```
+- **Response Body:**
+    ```json
+    {
+        "id": 1,
+        "username": "your-username"
+    }
+    ```
 
-## Swagger UI link
-http://localhost:8080/swagger-ui/index.html#/
+**Endpoint: `/api/auth/authenticate`**
+- **Method:** `POST`
+- **Description:** Authenticate a user and return a JWT token.
+- **Request Body:**
+    ```json
+    {
+        "username": "your-username",
+        "password": "your-password"
+    }
+    ```
+- **Response Body:**
+    ```json
+    {
+        "token": "your-jwt-token"
+    }
+    ```
 
-# DB INFO
+### User API
 
-## Start
-docker compose --profile db up -d
+**Endpoint: `/api/user`**
+- **Method:** `GET`
+- **Description:** Retrieve user details.
+- **Response Body:**
+    ```json
+    {
+        "id": 1,
+        "username": "your-username",
+        "email": "your-email"
+    }
+    ```
 
-## Stop
-docker compose --profile db down
+### Food API
 
-## Delete volume
-docker compose --profile db down -v 
+**Endpoint: `/api/food`**
+- **Method:** `POST`
+- **Description:** Create a new food item.
+- **Request Body:**
+    ```json
+    {
+        "title": "Apple",
+        "brand": "Fresh Fruits",
+        "category": "Fruit",
+        "nutrition": {
+            "calories": 52,
+            "protein": 0.3,
+            "carbs": 14,
+            "fat": 0.2
+        },
+        "sustainability": {
+            "co2perKg": 0.1,
+            "dietType": "VEGAN"
+        },
+        "portions": [
+            {
+                "label": "Whole",
+                "quantity": 182
+            }
+        ],
+        "liquid": false
+    }
+    ```
+- **Response Body:**
+    ```json
+    {
+        "id": 1,
+        "title": "Apple",
+        "brand": "Fresh Fruits",
+        "category": "Fruit",
+        "nutrition": {
+            "calories": 52,
+            "protein": 0.3,
+            "carbs": 14,
+            "fat": 0.2
+        },
+        "sustainability": {
+            "co2perKg": 0.1,
+            "dietType": "VEGAN"
+        },
+        "portions": [
+            {
+                "id": 1,
+                "label": "Whole",
+                "quantity": 182
+            }
+        ],
+        "liquid": false
+    }
+    ```
 
-# pgAdmin INFO
+**Endpoint: `/api/food/{id}`**
+- **Method:** `GET`
+- **Description:** Get details of a specific food item by ID.
+- **Response Body:**
+    ```json
+    {
+        "id": 1,
+        "title": "Apple",
+        "brand": "Fresh Fruits",
+        "category": "Fruit",
+        "nutrition": {
+            "calories": 52,
+            "protein": 0.3,
+            "carbs": 14,
+            "fat": 0.2
+        },
+        "sustainability": {
+            "co2perKg": 0.1,
+            "dietType": "VEGAN"
+        },
+        "portions": [
+            {
+                "id": 1,
+                "label": "Whole",
+                "quantity": 182
+            }
+        ],
+        "liquid": false
+    }
+    ```
 
-## Start
-docker compose --profile pgAdmin up -d
+**Endpoint: `/api/food/{id}`**
+- **Method:** `PUT`
+- **Description:** Update details of a specific food item by ID.
+- **Request Body:**
+    ```json
+    {
+        "title": "Apple",
+        "brand": "Fresh Fruits",
+        "category": "Fruit",
+        "nutrition": {
+            "calories": 52,
+            "protein": 0.3,
+            "carbs": 14,
+            "fat": 0.2
+        },
+        "sustainability": {
+            "co2perKg": 0.1,
+            "dietType": "VEGAN"
+        },
+        "portions": [
+            {
+                "label": "Whole",
+                "quantity": 182
+            }
+        ],
+        "liquid": false
+    }
+    ```
+- **Response Body:**
+    ```json
+    {
+        "id": 1,
+        "title": "Apple",
+        "brand": "Fresh Fruits",
+        "category": "Fruit",
+        "nutrition": {
+            "calories": 52,
+            "protein": 0.3,
+            "carbs": 14,
+            "fat": 0.2
+        },
+        "sustainability": {
+            "co2perKg": 0.1,
+            "dietType": "VEGAN"
+        },
+        "portions": [
+            {
+                "id": 1,
+                "label": "Whole",
+                "quantity": 182
+            }
+        ],
+        "liquid": false
+    }
+    ```
 
-## Stop
-docker compose --profile pgAdmin down
+**Endpoint: `/api/food/{id}`**
+- **Method:** `DELETE`
+- **Description:** Delete a specific food item by ID.
+
+### Tracking API
+
+**Endpoint: `/api/tracking`**
+- **Method:** `POST`
+- **Description:** Track a food item.
+- **Request Body:**
+    ```json
+    {
+        "foodId": 1,
+        "quantity": 1,
+        "portionId": 1
+    }
+    ```
+- **Response Body:**
+    ```json
+    {
+        "id": 1,
+        "food": {
+            "id": 1,
+            "title": "Apple",
+            "brand": "Fresh Fruits",
+            "category": "Fruit",
+            "isLiquid": false
+        },
+        "portion": {
+            "id": 1,
+            "label": "Whole",
+            "quantity": 182
+        },
+        "quantity": 1,
+        "timestamp": "2024-06-09T08:10:35.186885"
+    }
+    ```
+
+**Endpoint: `/api/tracking/{id}`**
+- **Method:** `GET`
+- **Description:** Get details of a specific tracking entry by ID.
+- **Response Body:**
+    ```json
+    {
+        "id": 1,
+        "food": {
+            "id": 1,
+            "title": "Apple",
+            "brand": "Fresh Fruits",
+            "category": "Fruit",
+            "isLiquid": false
+        },
+        "portion": {
+            "id": 1,
+            "label": "Whole",
+            "quantity": 182
+        },
+        "quantity": 1,
+        "timestamp": "2024-06-09T08:10:35.186885"
+    }
+    ```
