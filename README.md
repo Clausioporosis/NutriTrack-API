@@ -18,36 +18,9 @@
 **NutriTrack** is a web application designed to help users track their food consumption and nutritional information. Users can register, log in, add food items, track their daily food intake, and view their nutritional statistics.
 
 ## Environment Setup
-To set up the development environment for NutriTrack, follow these steps:
-
-1. **Clone the Repository:**
-    ```sh
-    git clone <repository_url>
-    cd nutritrack
-    ```
-
-2. **Build and Run with Docker:**
-    Ensure you have Docker installed. Use the `docker-compose.yml` file to set up the application:
-    ```sh
-    docker-compose up --build
-    ```
-
-3. **Build and Run without Docker:**
-    Ensure you have Java and Maven installed. Run the following commands:
-    ```sh
-    mvn clean install
-    mvn spring-boot:run
-    ```
 
 ## Technologies Used
-- **Spring Boot** for application framework
-- **Spring Security** for authentication and authorization
-- **JWT** for secure token-based authentication
-- **Hibernate** for ORM
-- **PostgreSQL** as the database
-- **Docker** for containerization
-- **Swagger** for API documentation
-- **Lombok** to reduce boilerplate code
+
 
 ## API Documentation
 
@@ -86,8 +59,6 @@ To set up the development environment for NutriTrack, follow these steps:
 
 ### User API
 
-### User API
-
 **Endpoint: `/api/users`**
 - **Method:** `GET`
 - **Description:** Get all users.
@@ -108,11 +79,7 @@ To set up the development environment for NutriTrack, follow these steps:
 - **Description:** Get the current user.
 - **[Response Body:](#user-response-body)**
 
-**Endpoint: `/api/users/{id}`**
-- **Method:** `DELETE`
-- **Description:** Delete user by ID.
-
-### User Response Body
+#### **User Response Body**
 ```json
 {
      "id": 0,
@@ -123,212 +90,274 @@ To set up the development environment for NutriTrack, follow these steps:
 }
 ```
 
-
-
+**Endpoint: `/api/users/{id}`**
+- **Method:** `DELETE`
+- **Description:** Delete user by ID.
     
 ### Food API
 
-**Endpoint: `/api/food`**
+**Endpoint: `/api/foods`**
 - **Method:** `POST`
 - **Description:** Create a new food item.
 - **Request Body:**
-    ```json
+```json
     {
-        "title": "Apple",
-        "brand": "Fresh Fruits",
-        "category": "Fruit",
+        "title": "string",
+        "brand": "string",
+        "category": "string",
         "nutrition": {
-            "calories": 52,
-            "protein": 0.3,
-            "carbs": 14,
-            "fat": 0.2
+            "calories": 0.0,
+            "protein": 0.0,
+            "carbs": 0.0,
+            "fat": 0.0
         },
         "sustainability": {
-            "co2perKg": 0.1,
-            "dietType": "VEGAN"
+            "co2perKg": 0.0,
+            "dietType": "OMNIVORE|VEGETARIAN|VEGAN"
         },
         "portions": [
             {
-                "label": "Whole",
-                "quantity": 182
+                "label": "String",
+                "quantity": 0.0
             }
         ],
         "liquid": false
     }
-    ```
-- **Response Body:**
-    ```json
-    {
-        "id": 1,
-        "title": "Apple",
-        "brand": "Fresh Fruits",
-        "category": "Fruit",
-        "nutrition": {
-            "calories": 52,
-            "protein": 0.3,
-            "carbs": 14,
-            "fat": 0.2
-        },
-        "sustainability": {
-            "co2perKg": 0.1,
-            "dietType": "VEGAN"
-        },
-        "portions": [
-            {
-                "id": 1,
-                "label": "Whole",
-                "quantity": 182
-            }
-        ],
-        "liquid": false
-    }
-    ```
+```
 
-**Endpoint: `/api/food/{id}`**
+**Endpoint: `/api/foods/user`**
 - **Method:** `GET`
-- **Description:** Get details of a specific food item by ID.
-- **Response Body:**
-    ```json
+- **Description:** Get all food items of the current user.
+- **[Response Body:](#food-response-body)**
+
+**Endpoint: `/api/foods/{id}`**
+- **Method:** `GET`
+- **Description:** Get details of a food item by ID.
+- **[Response Body:](#food-response-body)**
+
+#### **Food Response Body**
+```json
     {
-        "id": 1,
-        "title": "Apple",
-        "brand": "Fresh Fruits",
-        "category": "Fruit",
+        "id": 0,
+        "title": "string",
+        "brand": "string",
+        "category": "string",
         "nutrition": {
-            "calories": 52,
-            "protein": 0.3,
-            "carbs": 14,
-            "fat": 0.2
+            "calories": 0.0,
+            "protein": 0.0,
+            "carbs": 0.0,
+            "fat": 0.0
         },
         "sustainability": {
-            "co2perKg": 0.1,
-            "dietType": "VEGAN"
+            "co2perKg": 0.0,
+            "dietType": "OMNIVORE|VEGETARIAN|VEGAN"
         },
         "portions": [
             {
-                "id": 1,
-                "label": "Whole",
-                "quantity": 182
+                "id": 0,
+                "label": "string",
+                "quantity": 0.0
             }
         ],
         "liquid": false
     }
-    ```
+```
 
-**Endpoint: `/api/food/{id}`**
+**Endpoint: `/api/foods/{id}`**
 - **Method:** `PUT`
-- **Description:** Update details of a specific food item by ID.
+- **Description:** Update details of a specific food item by ID. Removes portions which are not present in the request body. Adds new portion if portion ID in json body is missing.  
 - **Request Body:**
-    ```json
+  
+```json
     {
-        "title": "Apple",
-        "brand": "Fresh Fruits",
-        "category": "Fruit",
+        "title": "string",
+        "brand": "string",
+        "category": "string",
         "nutrition": {
-            "calories": 52,
-            "protein": 0.3,
-            "carbs": 14,
-            "fat": 0.2
+            "calories": 0.0,
+            "protein": 0.0,
+            "carbs": 0.0,
+            "fat": 0.0
         },
         "sustainability": {
-            "co2perKg": 0.1,
-            "dietType": "VEGAN"
+            "co2perKg": 0.0,
+            "dietType": "OMNIVORE|VEGETARIAN|VEGAN"
         },
         "portions": [
             {
-                "label": "Whole",
-                "quantity": 182
+                "id": 0,
+                "label": "String",
+                "quantity": 0.0
+            },
+            {
+                "label": "String",
+                "quantity": 0.0
             }
         ],
         "liquid": false
     }
-    ```
-- **Response Body:**
-    ```json
-    {
-        "id": 1,
-        "title": "Apple",
-        "brand": "Fresh Fruits",
-        "category": "Fruit",
-        "nutrition": {
-            "calories": 52,
-            "protein": 0.3,
-            "carbs": 14,
-            "fat": 0.2
-        },
-        "sustainability": {
-            "co2perKg": 0.1,
-            "dietType": "VEGAN"
-        },
-        "portions": [
-            {
-                "id": 1,
-                "label": "Whole",
-                "quantity": 182
-            }
-        ],
-        "liquid": false
-    }
-    ```
+```
 
-**Endpoint: `/api/food/{id}`**
+**Endpoint: `/api/foods/user/simple`**
+- **Method:** `GET`
+- **Description:** Get all simplified food items of the current user.
+- **[Response Body:](#simple-food-response-body)**
+
+**Endpoint: `/api/foods/user/simple/search?title={title}`**
+- **Method:** `GET`
+- **Description:** Search for simplified food items of the current user.
+- **[Response Body:](#simple-food-response-body)**
+
+#### **Simple Food Response Body**
+```json
+    {
+        "id": 0,
+        "title": "string",
+        "brand": "string",
+        "category": "string",
+    }
+```
+
+**Endpoint: `/api/foods/{id}`**
 - **Method:** `DELETE`
-- **Description:** Delete a specific food item by ID.
+- **Description:** Deactivate a food item by ID.
+
+**Endpoint: `/api/foods/{id}/hard-delete`**
+- **Method:** `DELETE`
+- **Description:** Delete a food item by ID.
 
 ### Tracking API
 
 **Endpoint: `/api/tracking`**
 - **Method:** `POST`
-- **Description:** Track a food item.
+- **Description:** Track a food item for the current user. If `portionId = null`, the tracking quantity will be directly used as the weight, meaning if `portionId = null` and `quantity = 260`, the weight of the tracked item would be 260 g or ml, depending on the type.
 - **Request Body:**
-    ```json
+```json
     {
-        "foodId": 1,
-        "quantity": 1,
-        "portionId": 1
+        "foodId": 0,
+        "portionId": 0,
+        "quantity": 0.0
     }
-    ```
+```
 - **Response Body:**
-    ```json
+```json
     {
         "id": 1,
         "food": {
-            "id": 1,
-            "title": "Apple",
-            "brand": "Fresh Fruits",
-            "category": "Fruit",
+            "id": 0,
+            "title": "string",
+            "brand": "string",
+            "category": "string",
             "isLiquid": false
         },
         "portion": {
             "id": 1,
-            "label": "Whole",
-            "quantity": 182
+            "label": "string",
+            "quantity": 0.0
         },
-        "quantity": 1,
-        "timestamp": "2024-06-09T08:10:35.186885"
+        "quantity": 0.0,
+        "timestamp": "current-date-string"
     }
-    ```
+```
 
 **Endpoint: `/api/tracking/{id}`**
+- **Method:** `PUT`
+- **Description:** Update a tracking entry.
+- **Request Body:**
+```json
+    {
+        "portionId": 0,
+        "quantity": 0.0
+    }
+```
+
+**Endpoint: `/api/tracking/user`**
 - **Method:** `GET`
-- **Description:** Get details of a specific tracking entry by ID.
+- **Description:** Get all tracking entries.
 - **Response Body:**
-    ```json
+```json
     {
         "id": 1,
         "food": {
             "id": 1,
-            "title": "Apple",
-            "brand": "Fresh Fruits",
-            "category": "Fruit",
+            "title": "string",
+            "brand": "string",
+            "category": "string",
             "isLiquid": false
         },
         "portion": {
             "id": 1,
-            "label": "Whole",
-            "quantity": 182
+            "label": "string",
+            "quantity": 0.0
         },
-        "quantity": 1,
-        "timestamp": "2024-06-09T08:10:35.186885"
+        "quantity": 0.0,
+        "timestamp": "date-string"
     }
-    ```
+```
+
+**Endpoint: `/api/tracking/user/date?date={YYYY-MM-DD}`**
+- **Method:** `GET`
+- **Description:** Get tracking entries and stat summary on a specific day.
+- **Response Body:**
+```json
+    {
+       "trackings": [
+           {
+              "id": 1,
+              "food": {
+                   "id": 1,
+                   "title": "string",
+                   "brand": "string",
+                   "category": "string",
+                   "isLiquid": false
+               },
+               "portion": {
+                    "id": 1,
+                    "label": "string",
+                    "quantity": 0.0
+                },
+                "quantity": 0.0,
+                "timestamp": [YYYY, MM, DD, HH, MM, SS, NS]
+            }
+        ],
+        "summary": {
+            "totalCalories": 0.0,
+            "totalProtein": 0.0,
+            "totalCarbs": 0.0,
+            "totalFat": 0.0,
+            "totalCo2": 0.0,
+            "totalVeganMeals": 0,
+            "totalVegetarianMeals": 0,
+            "dailyPoints": 0
+        }
+    }
+```
+
+**Endpoint: `/api/tracking/{id}`**
+- **Method:** `DELETE`
+- **Description:** Delete tracking entry by ID.
+
+### User Stats API
+
+**Endpoint: `/api/user/total`**
+- **Method:** `GET`
+- **Description:** Get total stat summary of the current user.
+- **[Response Body:](#stats-response-body)**
+
+**Endpoint: `/api/user/date?date={YYYY-MM-DD}`**
+- **Method:** `GET`
+- **Description:** Get stat summary of the current user on a specific day.
+- **[Response Body:](#stats-response-body)**
+
+#### **Stats Response Body**
+    {
+        "totalCalories": 0,
+        "totalProtein": 0,
+        "totalCarbs": 0,
+        "totalFat": 0,
+        "totalCo2": 0,
+        "totalVeganMeals": 0,
+        "totalVegetarianMeals": 0,
+        "totalPoints": 0
+    }
+```
