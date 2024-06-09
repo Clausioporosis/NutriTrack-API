@@ -59,15 +59,11 @@ To set up the development environment for NutriTrack, follow these steps:
 - **Request Body:**
     ```json
     {
-        "username": "your-username",
-        "password": "your-password"
-    }
-    ```
-- **Response Body:**
-    ```json
-    {
-        "id": 1,
-        "username": "your-username"
+        "username": "string",
+        "email": "string",
+        "password": "string",
+        "firstName": "string",
+        "lastName": "string"
     }
     ```
 
@@ -77,31 +73,61 @@ To set up the development environment for NutriTrack, follow these steps:
 - **Request Body:**
     ```json
     {
-        "username": "your-username",
-        "password": "your-password"
+        "username": "string",
+        "password": "string"
     }
     ```
 - **Response Body:**
     ```json
     {
-        "token": "your-jwt-token"
+        "token": "string"
     }
     ```
 
 ### User API
 
-**Endpoint: `/api/user`**
-- **Method:** `GET`
-- **Description:** Retrieve user details.
-- **Response Body:**
-    ```json
-    {
-        "id": 1,
-        "username": "your-username",
-        "email": "your-email"
-    }
-    ```
+### User API
 
+**Endpoint: `/api/users`**
+- **Method:** `GET`
+- **Description:** Get all users.
+- **Response Body:** [Response Body](#response-body)
+
+**Endpoint: `/api/users/{id}`**
+- **Method:** `GET`
+- **Description:** Get user by ID.
+- **Response Body:** [Response Body](#response-body)
+
+**Endpoint: `/api/users/{id}`**
+- **Method:** `DELETE`
+- **Description:** Delete user by ID.
+
+**Endpoint: `/api/users/search?keyword={keyword}`**
+- **Method:** `GET`
+- **Description:** Search users by keyword.
+- **Response Body:** [Response Body](#response-body)
+
+**Endpoint: `/api/users/me`**
+- **Method:** `GET`
+- **Description:** Get the current user.
+- **Response Body:**
+
+    [Response Body](#response-body)
+
+### Response Body
+```json
+{
+     "id": 0,
+     "username": "string",
+     "email": "string",
+     "firstName": "string",
+     "lastName": "string"
+}
+
+
+
+
+    
 ### Food API
 
 **Endpoint: `/api/food`**
