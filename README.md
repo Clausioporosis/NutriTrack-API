@@ -1,4 +1,4 @@
-# NutriTrack Project Documentation
+# NutriTrack API
 
 ## Table of Contents
 1. [Project Overview](#project-overview)
