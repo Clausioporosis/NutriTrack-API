@@ -1,11 +1,13 @@
 # NutriTrack
+#### The Sustainable Nutrition Tracking App
 
 ## Table of Contents
 1. [Project Overview](#project-overview)
 2. [Technologies Used](#technologies-used)
-3. [Environment Setup](#environment-setup)
-4. [Security](#security)
-5. [API Documentation](#api-documentation)
+3. [Points System](#points-system)
+4. [Environment Setup](#environment-setup)
+5. [Security](#security)
+6. [API Documentation](#api-documentation)
     - [Authentication API](#authentication-api)
     - [User API](#user-api)
     - [Food API](#food-api)
@@ -15,7 +17,7 @@
 ---
 
 ## Project Overview
-**NutriTrack** is an upcoming app designed to help users track their food consumption, nutritional information and environmental impact.
+**NutriTrack** is an innovative app designed to help users track their food consumption, nutritional information, and environmental impact. By providing valuable insights into dietary decisions and statistics, NutriTrack not only promotes healthier habits but also rewards users for their progress.
 
 ## Technologies Used
 
@@ -32,6 +34,27 @@ NutriTrack leverages the following key technologies:
 - **pgAdmin:** Database management tool for PostgreSQL.
 - **JWT (JSON Web Tokens):** Secure authentication mechanism.
 - **Maven:** Build automation and dependency management.
+
+## Points System
+
+The points system is designed to motivate users to make healthier dietary choices by awarding points for tracking foods. These points are awarded on each tracking entry the user made based on the nutritional information and CO2 emissions of the foods.
+
+### Functionality
+
+- Points Based on Diet Type:
+  - Vegan meals: 15 points
+  - Vegetarian meals: 8 points
+  - Other meals: 2 points
+
+- Points Based on CO2 Emissions:
+  - CO2 emissions < 0.1 kg: 10 points
+  - CO2 emissions < 0.2 kg: 5 points
+  - CO2 emissions < 0.3 kg: 2 points
+
+- Points Based on Caloric Content:
+  - Calories < 100: 5 points
+  - Calories < 200: 3 points
+  - Calories < 300: 1 point
 
 ## Environment Setup
 
