@@ -10,12 +10,11 @@
     - [Food API](#food-api)
     - [Tracking API](#tracking-api)
     - [User Stats API](#user-stats-api)
-5. [Entities and DTOs](#entities-and-dtos)
 
 ---
 
 ## Project Overview
-**NutriTrack** is a web application designed to help users track their food consumption and nutritional information. Users can register, log in, add food items, track their daily food intake, and view their nutritional statistics.
+**NutriTrack** is an upcoming app designed to help users track their food consumption, nutritional information and environmental impact.
 
 ## Environment Setup
 
