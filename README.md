@@ -193,7 +193,7 @@ For user-related operations, the user ID is securely extracted from the JWT toke
 
 **Endpoint: `/api/foods/user`**
 - **Method:** `GET`
-- **Description:** Get all food items of the current user.
+- **Description:** Get all food items.
 - **[Response Body:](#food-response-body)**
 
 **Endpoint: `/api/foods/{id}`**
@@ -266,12 +266,12 @@ For user-related operations, the user ID is securely extracted from the JWT toke
 
 **Endpoint: `/api/foods/user/simple`**
 - **Method:** `GET`
-- **Description:** Get all simplified food items of the current user.
+- **Description:** Get all simplified food items.
 - **[Response Body:](#simple-food-response-body)**
 
 **Endpoint: `/api/foods/user/simple/search?title={title}`**
 - **Method:** `GET`
-- **Description:** Search for simplified food items of the current user.
+- **Description:** Search for simplified food items by title.
 - **[Response Body:](#simple-food-response-body)**
 
 #### **Simple Food Response Body**
@@ -296,7 +296,7 @@ For user-related operations, the user ID is securely extracted from the JWT toke
 
 **Endpoint: `/api/tracking`**
 - **Method:** `POST`
-- **Description:** Track a food item for the current user. If `portionId = null`, the tracking quantity will be directly used as the weight, meaning if `portionId = null` and `quantity = 260`, the weight of the tracked item would be 260 g or ml, depending on the type.
+- **Description:** Track a food item and it's portion size. If `portionId = null`, the tracking quantity will be directly used as the weight, meaning if `portionId = null` and `quantity = 260`, the weight of the tracked item would be 260 g or ml, depending on the type.
 - **Request Body:**
 ```json
     {
@@ -407,7 +407,7 @@ For user-related operations, the user ID is securely extracted from the JWT toke
 
 **Endpoint: `/api/user/total`**
 - **Method:** `GET`
-- **Description:** Get total stat summary of the current user.
+- **Description:** Get total stat summary.
 - **[Response Body:](#stats-response-body)**
 
 **Endpoint: `/api/user/date?date={YYYY-MM-DD}`**
