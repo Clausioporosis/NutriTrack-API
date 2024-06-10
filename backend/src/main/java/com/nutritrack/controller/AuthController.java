@@ -72,7 +72,7 @@ public class AuthController {
             @ApiResponse(responseCode = "401", description = "Unauthorized, incorrect username or password"),
             @ApiResponse(responseCode = "400", description = "Invalid input data")
     })
-    @PostMapping("/authenticate")
+    @PostMapping("/login")
     public ResponseEntity<AuthenticationResponse> createAuthenticationToken(
             @Valid @RequestBody AuthenticationRequest authenticationRequest) {
         try {
